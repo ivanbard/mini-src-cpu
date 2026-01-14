@@ -23,10 +23,10 @@ module reg32 (
 
     always @(posedge clk) begin
         if (reset)
-            q <= 32'b0; //clear flip flops if reset = 1
+            d_out <= 32'b0; //clear flip flops if reset = 1
         else if (en)
-            q <= d; //put data in into flip flops if enable = 1
-        //otherwise q stays same
+            d_out <= d_in; //put data in into flip flops if enable = 1
+        //otherwise d_out stays same
     end
 
 endmodule
@@ -51,7 +51,9 @@ module regfile16(
     output wire [31:0] r12_out,
     output wire [31:0] r13_out,
     output wire [31:0] r14_out,
-    output wire [31:0] r15_out
+    output wire [31:0] r15_out,
+    input wire [15:0] rout,
+    output wire [31:0] bus_out
 );
 
 
@@ -65,6 +67,7 @@ module regfile16(
         .d_out(r0_out)
     );
 
+    //put all the register declarations into one-liners in future
     reg32 r1 (
         .clk(clk),
         .reset(reset),
@@ -172,4 +175,22 @@ module regfile16(
     );
 
 
+    assign bus_out = 
+        rout[0] ? r0_out :
+        rout[1] ? r1_out :
+        rout[2] ? r2_out :
+        rout[3] ? r3_out :
+        rout[4] ? r4_out :
+        rout[5] ? r5_out :
+        rout[6] ? r6_out :
+        rout[7] ? r7_out :
+        rout[8] ? r8_out :
+        rout[9] ? r9_out :
+        rout[10] ? r10_out :
+        rout[11] ? r11_out :
+        rout[12] ? r12_out :
+        rout[13] ? r13_out :
+        rout[14] ? r14_out :
+        rout[15] ? r15_out :
+        32'b0; // if no reg. enables active, then bus = 0
 endmodule
