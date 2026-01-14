@@ -175,7 +175,7 @@ module regfile16(
     );
 
 
-    assign bus_out = 
+    assign bus_out = //bus mux
         rout[0] ? r0_out :
         rout[1] ? r1_out :
         rout[2] ? r2_out :
