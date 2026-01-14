@@ -42,8 +42,9 @@ module tb_regfile16;
         #1; //small delay to be safe for the mux
 
         if (bus_out !== 32'hAAAA5555) $display("error: bus_out=%h", bus_out);
-        else $display("works")
-        $finish
+        else $display("works");
+
+        $finish;
     end
 
 endmodule
