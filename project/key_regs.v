@@ -1,4 +1,4 @@
-module PC_reg(
+module key_regs(
     input wire clk, 
     input wire reset,
     input wire pc_in,
