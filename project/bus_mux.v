@@ -20,6 +20,7 @@ module bus_mux_enc (
 
     always @(*) begin
         case (bus_sel)
+        // 5 bits representing the item that is selected
         5'd0:  BusMuxOut = r0;
         5'd1:  BusMuxOut = r1;
         5'd2:  BusMuxOut = r2;
@@ -46,7 +47,7 @@ module bus_mux_enc (
         5'd22: BusMuxOut = inport_val;
         5'd23: BusMuxOut = c_val;
 
-        default: BusMuxOut = 32'b0;
+        default: BusMuxOut = 32'b0; //0 when nothing selected
         endcase
     end
 
