@@ -3,7 +3,7 @@ module PC_reg(
     input wire reset,
     input wire pc_in,
     input wire [31:0] bus,
-    output reg [31:0] pc_out
+    output wire [31:0] pc_val
 );
 
 
@@ -12,8 +12,8 @@ module PC_reg(
         .reset(reset),
         .en(pc_in),
         .d_in(bus),
-        .d_out(pc_out)
-    )
+        .d_out(pc_val)
+    );
 
 
 endmodule
