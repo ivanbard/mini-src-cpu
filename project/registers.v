@@ -51,7 +51,7 @@ module regfile16(
     output wire [31:0] r12_out,
     output wire [31:0] r13_out,
     output wire [31:0] r14_out,
-    output wire [31:0] r15_out,
+    output wire [31:0] r15_out
 );
 
 
