@@ -1,5 +1,5 @@
 # CPU Design Project
-In Verilog
+In Verilog, using Icarus Verilog and GTKWave
 
 ## To-Do
 ### Phase 1
