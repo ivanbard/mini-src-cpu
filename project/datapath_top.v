@@ -14,6 +14,11 @@ module datapath_top(
     input wire hi_in,
     input wire lo_in,
 
+    // MDR control signals
+    input wire MDRin,
+    input wire Read,
+    input wire [31:0] Mdatain,  //Input from memory
+
     input wire [31:0] inport_val,
     input wire [31:0] c_val,
 
@@ -23,7 +28,10 @@ module datapath_top(
     output wire [31:0] pc_val,
     output wire [31:0] ir_val,
     output wire [31:0] y_val,
-    output wire [31:0] mar_val
+    output wire [31:0] mar_val,
+    
+    // mdr output (to memory)
+    output wire [31:0] Mdataout
 );
 
     wire [31:0] r0_out, r1_out, r2_out, r3_out, r4_out, r5_out, r6_out, r7_out;
@@ -32,7 +40,7 @@ module datapath_top(
     // Key register outputs
     wire [31:0] hi_val, lo_val;
     wire [31:0] zhigh_val, zlow_val;
-    wire [31:0] mdr_val = 32'b0;  // MDR not implemented yet
+    wire [31:0] mdr_val; //mdr output
 
     regfile16 rf (
         .clk(clk),
@@ -66,6 +74,19 @@ module datapath_top(
         .lo_in(lo_in),
         .lo_val(lo_val)
     );
+
+    mdr mdr_inst (
+        .clk(clk),
+        .reset(reset),
+        .MDRin(MDRin),
+        .Read(Read),
+        .BusMuxOut(BusMuxOut),
+        .Mdatain(Mdatain),
+        .MDR_val(mdr_val)
+    );
+
+    // connect MDR output to memory
+    assign Mdataout = mdr_val;
 
     bus_mux_enc bmux (
         .bus_sel(bus_sel),
