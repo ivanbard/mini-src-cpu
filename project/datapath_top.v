@@ -8,8 +8,6 @@ module datapath_top(
     input wire pc_in,
     input wire ir_in,
     input wire y_in,
-    input wire zhigh_in,
-    input wire zlow_in,
     input wire mar_in,
     input wire hi_in,
     input wire lo_in,
@@ -18,6 +16,10 @@ module datapath_top(
     input wire MDRin,
     input wire Read,
     input wire [31:0] Mdatain,  //Input from memory
+
+    // ALU control
+    input wire [4:0] alu_op,    // ALU operation select
+    input wire Zin,             // Z register load enable
 
     input wire [31:0] inport_val,
     input wire [31:0] c_val,
@@ -30,6 +32,10 @@ module datapath_top(
     output wire [31:0] y_val,
     output wire [31:0] mar_val,
     
+    // Z register outputs (for debugging/monitoring)
+    output wire [31:0] zhigh_out,
+    output wire [31:0] zlow_out,
+    
     // mdr output (to memory)
     output wire [31:0] Mdataout
 );
@@ -39,8 +45,18 @@ module datapath_top(
 
     // Key register outputs
     wire [31:0] hi_val, lo_val;
-    wire [31:0] zhigh_val, zlow_val;
     wire [31:0] mdr_val; //mdr output
+    
+    // 64-bit Z register (separate from key_regs for ALU output)
+    reg [63:0] Z_reg;
+    wire [31:0] zhigh_val, zlow_val;
+    assign zhigh_val = Z_reg[63:32];
+    assign zlow_val = Z_reg[31:0];
+    assign zhigh_out = zhigh_val;
+    assign zlow_out = zlow_val;
+    
+    // ALU signals
+    wire [63:0] alu_result;
 
     regfile16 rf (
         .clk(clk),
@@ -63,10 +79,10 @@ module datapath_top(
         .ir_val(ir_val),
         .y_in(y_in),
         .y_val(y_val),
-        .zhigh_in(zhigh_in),
-        .zhigh_val(zhigh_val),
-        .zlow_in(zlow_in),
-        .zlow_val(zlow_val),
+        .zhigh_in(1'b0),         // Z register handled separately
+        .zhigh_val(),            // Not used - Z is 64-bit
+        .zlow_in(1'b0),          // Z register handled separately
+        .zlow_val(),             // Not used - Z is 64-bit
         .mar_in(mar_in),
         .mar_val(mar_val),
         .hi_in(hi_in),
@@ -87,6 +103,23 @@ module datapath_top(
 
     // connect MDR output to memory
     assign Mdataout = mdr_val;
+
+    // ALU: A = Y register, B = bus
+    alu alu_inst (
+        .A(y_val),
+        .B(BusMuxOut),
+        .op(alu_op),
+        .C(alu_result)
+    );
+
+    // 64-bit Z register - loads ALU result when Zin is asserted
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            Z_reg <= 64'b0;
+        end else if (Zin) begin
+            Z_reg <= alu_result;
+        end
+    end
 
     bus_mux_enc bmux (
         .bus_sel(bus_sel),
