@@ -6,6 +6,7 @@ module datapath_top(
 
     // Key register control signals
     input wire pc_in,
+    input wire IncPC, // PC increment signal
     input wire ir_in,
     input wire y_in,
     input wire mar_in,
@@ -74,6 +75,7 @@ module datapath_top(
         .reset(reset),
         .BusMuxOut(BusMuxOut),
         .pc_in(pc_in),
+        .IncPC(IncPC),
         .pc_val(pc_val),
         .ir_in(ir_in),
         .ir_val(ir_val),

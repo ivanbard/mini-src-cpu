@@ -3,6 +3,7 @@ module key_regs(
     input wire reset,
     input wire [31:0] BusMuxOut,
     input wire pc_in,
+    input wire IncPC, // PC reg increment signal
     output wire [31:0] pc_val,
     input wire ir_in,
     output wire [31:0] ir_val,
@@ -20,12 +21,13 @@ module key_regs(
     output wire [31:0] lo_val
 );
 
-    reg32 PC (
+    pc_reg PC (
         .clk(clk),
         .reset(reset),
-        .en(pc_in),
-        .d_in(BusMuxOut),
-        .d_out(pc_val)
+        .pc_in(pc_in),
+        .IncPC(IncPC),
+        .BusMuxOut(BusMuxOut),
+        .pc_val(pc_val)
     );
 
     reg32 IR (
