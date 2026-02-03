@@ -24,7 +24,7 @@ module key_regs(
         .clk(clk),
         .reset(reset),
         .en(pc_in),
-        .d_in(bus),
+        .d_in(BusMuxOut),
         .d_out(pc_val)
     );
 
@@ -32,7 +32,7 @@ module key_regs(
         .clk(clk),
         .reset(reset),
         .en(ir_in),
-        .d_in(bus),
+        .d_in(BusMuxOut),
         .d_out(ir_val)
     );
 
@@ -40,7 +40,7 @@ module key_regs(
         .clk(clk),
         .reset(reset),
         .en(y_in),
-        .d_in(bus),
+        .d_in(BusMuxOut),
         .d_out(y_val)
     );
 
@@ -48,7 +48,7 @@ module key_regs(
         .clk(clk),
         .reset(reset),
         .en(zhigh_in),
-        .d_in(bus),
+        .d_in(BusMuxOut),
         .d_out(zhigh_val)
     );
 
@@ -56,7 +56,7 @@ module key_regs(
         .clk(clk),
         .reset(reset),
         .en(zlow_in),
-        .d_in(bus),
+        .d_in(BusMuxOut),
         .d_out(zlow_val)
     );
     
@@ -64,7 +64,7 @@ module key_regs(
         .clk(clk),
         .reset(reset),
         .en(mar_in),
-        .d_in(bus),
+        .d_in(BusMuxOut),
         .d_out(mar_val)
     );
 
@@ -72,7 +72,7 @@ module key_regs(
         .clk(clk),
         .reset(reset),
         .en(hi_in),
-        .d_in(bus),
+        .d_in(BusMuxOut),
         .d_out(hi_val)
     );
 
@@ -80,7 +80,7 @@ module key_regs(
         .clk(clk),
         .reset(reset),
         .en(lo_in),
-        .d_in(bus),
+        .d_in(BusMuxOut),
         .d_out(lo_val)
     );
 

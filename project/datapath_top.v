@@ -4,22 +4,35 @@ module datapath_top(
     input wire [15:0] rin,
     input wire [4:0]  bus_sel,
 
+    // Key register control signals
+    input wire pc_in,
+    input wire ir_in,
+    input wire y_in,
+    input wire zhigh_in,
+    input wire zlow_in,
+    input wire mar_in,
+    input wire hi_in,
+    input wire lo_in,
+
     input wire [31:0] inport_val,
     input wire [31:0] c_val,
 
-    output wire [31:0] BusMuxOut
+    output wire [31:0] BusMuxOut,
+    
+    // Key register outputs
+    output wire [31:0] pc_val,
+    output wire [31:0] ir_val,
+    output wire [31:0] y_val,
+    output wire [31:0] mar_val
 );
 
     wire [31:0] r0_out, r1_out, r2_out, r3_out, r4_out, r5_out, r6_out, r7_out;
     wire [31:0] r8_out, r9_out, r10_out, r11_out, r12_out, r13_out, r14_out, r15_out;
 
-    //key regs as 0 since theyre not implemented YET
-    wire [31:0] hi_val    = 32'b0;
-    wire [31:0] lo_val    = 32'b0;
-    wire [31:0] zhigh_val = 32'b0;
-    wire [31:0] zlow_val  = 32'b0;
-    wire [31:0] pc_val    = 32'b0;
-    wire [31:0] mdr_val   = 32'b0;
+    // Key register outputs
+    wire [31:0] hi_val, lo_val;
+    wire [31:0] zhigh_val, zlow_val;
+    wire [31:0] mdr_val = 32'b0;  // MDR not implemented yet
 
     regfile16 rf (
         .clk(clk),
@@ -30,6 +43,28 @@ module datapath_top(
         .r4_out(r4_out), .r5_out(r5_out), .r6_out(r6_out), .r7_out(r7_out),
         .r8_out(r8_out), .r9_out(r9_out), .r10_out(r10_out), .r11_out(r11_out),
         .r12_out(r12_out), .r13_out(r13_out), .r14_out(r14_out), .r15_out(r15_out)
+    );
+
+    key_regs key_regs_inst (
+        .clk(clk),
+        .reset(reset),
+        .BusMuxOut(BusMuxOut),
+        .pc_in(pc_in),
+        .pc_val(pc_val),
+        .ir_in(ir_in),
+        .ir_val(ir_val),
+        .y_in(y_in),
+        .y_val(y_val),
+        .zhigh_in(zhigh_in),
+        .zhigh_val(zhigh_val),
+        .zlow_in(zlow_in),
+        .zlow_val(zlow_val),
+        .mar_in(mar_in),
+        .mar_val(mar_val),
+        .hi_in(hi_in),
+        .hi_val(hi_val),
+        .lo_in(lo_in),
+        .lo_val(lo_val)
     );
 
     bus_mux_enc bmux (
