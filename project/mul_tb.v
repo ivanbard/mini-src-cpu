@@ -1,6 +1,4 @@
-// mul_tb.v - Testbench for MUL instruction (Section 3.5)
-// Instruction: mul R3, R1
-// Note: Result goes to HI:LO registers (64-bit product)
+// mul R3, R1 testbench
 `timescale 1ns/10ps
 
 module mul_tb;
@@ -68,12 +66,12 @@ module mul_tb;
                 alu_op <= 5'b0; Zin <= 0;
                 inport_val <= 32'b0; c_val <= 32'b0;
             end
-            // Load R3 with 7
+            // load R3 = 7
             Reg_load1a: begin Mdatain <= 32'h00000007; Read <= 1; MDRin <= 1; end
-            Reg_load1b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000001000; end  // R3in
-            // Load R1 with 6
+            Reg_load1b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000001000; end
+            // load R1 = 6
             Reg_load2a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000006; Read <= 1; MDRin <= 1; end
-            Reg_load2b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000000010; end  // R1in
+            Reg_load2b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000000010; end
             // T0: PCout, MARin, IncPC, Zin
             T0: begin rin <= 16'b0; bus_sel <= SEL_PC; mar_in <= 1; IncPC <= 1; alu_op <= ALU_ADD; Zin <= 1; end
             // T1: Zlowout, PCin, Read, Mdatain, MDRin

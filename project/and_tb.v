@@ -1,39 +1,29 @@
-// and_tb.v - Testbench for AND instruction
-// Instruction: and R2, R5, R6
-// Tests logical AND circuitry following Phase 1 control sequence
+// and R2, R5, R6 testbench
 `timescale 1ns/10ps
 
 module and_tb;
-    // Clock and reset
     reg clk;
     reg reset;
     
-    // Register file control
-    reg [15:0] rin;           // R0in-R15in encoded
-    reg [4:0] bus_sel;        // Bus select (which register drives the bus)
+    reg [15:0] rin;
+    reg [4:0] bus_sel;
     
-    // Key register control signals
     reg pc_in, IncPC, ir_in, y_in, mar_in, hi_in, lo_in;
     
-    // MDR control
     reg MDRin, Read;
     reg [31:0] Mdatain;
     
-    // ALU control
     reg [4:0] alu_op;
     reg Zin;
     
-    // Other inputs
     reg [31:0] inport_val;
     reg [31:0] c_val;
     
-    // Outputs
     wire [31:0] BusMuxOut;
     wire [31:0] pc_val, ir_val, y_val, mar_val;
     wire [31:0] zhigh_out, zlow_out;
     wire [31:0] Mdataout;
 
-    // Bus select encodings
     localparam SEL_R0 = 5'd0,  SEL_R1 = 5'd1,  SEL_R2 = 5'd2,  SEL_R3 = 5'd3;
     localparam SEL_R4 = 5'd4,  SEL_R5 = 5'd5,  SEL_R6 = 5'd6,  SEL_R7 = 5'd7;
     localparam SEL_R8 = 5'd8,  SEL_R9 = 5'd9,  SEL_R10 = 5'd10, SEL_R11 = 5'd11;
@@ -43,7 +33,6 @@ module and_tb;
     localparam SEL_PC = 5'd20, SEL_MDR = 5'd21;
     localparam SEL_INPORT = 5'd22, SEL_C = 5'd23;
 
-    // ALU operation encodings
     localparam ALU_ADD  = 5'b00000;
     localparam ALU_SUB  = 5'b00001;
     localparam ALU_MUL  = 5'b00010;
@@ -58,7 +47,6 @@ module and_tb;
     localparam ALU_ROR  = 5'b01011;
     localparam ALU_ROL  = 5'b01100;
 
-    // State machine states
     parameter 
         Default = 4'b0000, 
         Reg_load1a = 4'b0001, Reg_load1b = 4'b0010, 
@@ -70,7 +58,6 @@ module and_tb;
     
     reg [3:0] Present_state = Default;
 
-    // Instantiate the datapath
     datapath_top DUT (
         .clk(clk),
         .reset(reset),

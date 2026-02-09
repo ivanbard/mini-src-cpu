@@ -1,5 +1,4 @@
-// sub_tb.v - Testbench for SUB instruction (Section 3.4)
-// Instruction: sub R2, R5, R6
+// sub R2, R5, R6 testbench
 `timescale 1ns/10ps
 
 module sub_tb;

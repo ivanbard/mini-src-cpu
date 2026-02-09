@@ -1,32 +1,17 @@
-/*
-width = 32 bits
-
-Inputs:
-    clock
-    reset
-    enable
-    data in
-
-Outputs:
-    stored value
-
-*/
-
-// one single 32 bit register
+// 32-bit register
 module reg32 (
     input wire clk,
     input wire reset,
     input wire en,
     input wire [31:0] d_in,
-    output reg [31:0] d_out //32 flip flops
+    output reg [31:0] d_out
 );
 
     always @(posedge clk) begin
         if (reset)
-            d_out <= 32'b0; //clear flip flops if reset = 1
+            d_out <= 32'b0;
         else if (en)
-            d_out <= d_in; //put data in into flip flops if enable = 1
-        //otherwise d_out stays same
+            d_out <= d_in;
     end
 
 endmodule
@@ -54,9 +39,6 @@ module regfile16(
     output wire [31:0] r15_out
 );
 
-
-    //associate each instance of reg32 module with the correct items for that input
-    //.original(instance_specific)
     reg32 r0 (
         .clk(clk),
         .reset(reset),
@@ -65,7 +47,6 @@ module regfile16(
         .d_out(r0_out)
     );
 
-    //put all the register declarations into one-liners in future
     reg32 r1 (
         .clk(clk),
         .reset(reset),

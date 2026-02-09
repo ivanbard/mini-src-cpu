@@ -20,7 +20,6 @@ module bus_mux_enc (
 
     always @(*) begin
         case (bus_sel)
-        // 5 bits representing the item that is selected
         5'd0:  BusMuxOut = r0;
         5'd1:  BusMuxOut = r1;
         5'd2:  BusMuxOut = r2;

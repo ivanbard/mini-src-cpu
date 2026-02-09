@@ -1,5 +1,4 @@
-// shr_tb.v - Testbench for SHR instruction (Section 3.7)
-// Instruction: shr R7, R0, R4 (R7 = R0 >> R4)
+// shr R7, R0, R4 testbench
 `timescale 1ns/10ps
 
 module shr_tb;
@@ -67,27 +66,27 @@ module shr_tb;
                 alu_op <= 5'b0; Zin <= 0;
                 inport_val <= 32'b0; c_val <= 32'b0;
             end
-            // Load R0 with 0x80000000 (value to shift)
+            // load R0 = 0x80000000
             Reg_load1a: begin Mdatain <= 32'h80000000; Read <= 1; MDRin <= 1; end
-            Reg_load1b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000000001; end  // R0in
-            // Load R4 with 4 (shift amount)
+            Reg_load1b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000000001; end
+            // load R4 = 4
             Reg_load2a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000004; Read <= 1; MDRin <= 1; end
-            Reg_load2b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000010000; end  // R4in
-            // Load R7 with 0
+            Reg_load2b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000010000; end
+            // load R7 = 0
             Reg_load3a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000000; Read <= 1; MDRin <= 1; end
-            Reg_load3b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000010000000; end  // R7in
+            Reg_load3b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000010000000; end
             // T0: PCout, MARin, IncPC, Zin
             T0: begin rin <= 16'b0; bus_sel <= SEL_PC; mar_in <= 1; IncPC <= 1; alu_op <= ALU_ADD; Zin <= 1; end
             // T1: Zlowout, PCin, Read, Mdatain, MDRin
             T1: begin mar_in <= 0; IncPC <= 0; Zin <= 0; bus_sel <= SEL_ZLOW; pc_in <= 1; Read <= 1; MDRin <= 1; Mdatain <= 32'hA3808000; end
             // T2: MDRout, IRin
             T2: begin pc_in <= 0; Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; ir_in <= 1; end
-            // T3: R0out, Yin (value to Y)
+            // T3: R0out, Yin
             T3: begin ir_in <= 0; bus_sel <= SEL_R0; y_in <= 1; end
-            // T4: R4out, SHR, Zin (shift amount to ALU - uses B input for shift count)
+            // T4: R4out, SHR, Zin
             T4: begin y_in <= 0; bus_sel <= SEL_R4; alu_op <= ALU_SHR; Zin <= 1; end
             // T5: Zlowout, R7in
-            T5: begin Zin <= 0; bus_sel <= SEL_ZLOW; rin <= 16'b0000000010000000; end  // R7in
+            T5: begin Zin <= 0; bus_sel <= SEL_ZLOW; rin <= 16'b0000000010000000; end
             Done: begin rin <= 16'b0; bus_sel <= 5'b0; end
         endcase
     end

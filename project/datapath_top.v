@@ -44,11 +44,10 @@ module datapath_top(
     wire [31:0] r0_out, r1_out, r2_out, r3_out, r4_out, r5_out, r6_out, r7_out;
     wire [31:0] r8_out, r9_out, r10_out, r11_out, r12_out, r13_out, r14_out, r15_out;
 
-    // Key register outputs
     wire [31:0] hi_val, lo_val;
-    wire [31:0] mdr_val; //mdr output
+    wire [31:0] mdr_val;
     
-    // 64-bit Z register (separate from key_regs for ALU output)
+    // 64-bit Z register
     reg [63:0] Z_reg;
     wire [31:0] zhigh_val, zlow_val;
     assign zhigh_val = Z_reg[63:32];
@@ -56,7 +55,6 @@ module datapath_top(
     assign zhigh_out = zhigh_val;
     assign zlow_out = zlow_val;
     
-    // ALU signals
     wire [63:0] alu_result;
 
     regfile16 rf (
@@ -81,10 +79,10 @@ module datapath_top(
         .ir_val(ir_val),
         .y_in(y_in),
         .y_val(y_val),
-        .zhigh_in(1'b0),         // Z register handled separately
-        .zhigh_val(),            // Not used - Z is 64-bit
-        .zlow_in(1'b0),          // Z register handled separately
-        .zlow_val(),             // Not used - Z is 64-bit
+        .zhigh_in(1'b0),
+        .zhigh_val(),
+        .zlow_in(1'b0),
+        .zlow_val(),
         .mar_in(mar_in),
         .mar_val(mar_val),
         .hi_in(hi_in),
@@ -103,10 +101,8 @@ module datapath_top(
         .MDR_val(mdr_val)
     );
 
-    // connect MDR output to memory
     assign Mdataout = mdr_val;
 
-    // ALU: A = Y register, B = bus
     alu alu_inst (
         .A(y_val),
         .B(BusMuxOut),
@@ -114,7 +110,7 @@ module datapath_top(
         .C(alu_result)
     );
 
-    // 64-bit Z register - loads ALU result when Zin is asserted
+    // Z register loads ALU result
     always @(posedge clk or posedge reset) begin
         if (reset) begin
             Z_reg <= 64'b0;

@@ -1,5 +1,4 @@
-// rol_tb.v - Testbench for ROL instruction (Section 3.11)
-// Instruction: rol R7, R0, R4 (R7 = R0 rotated left by R4)
+// rol R7, R0, R4 testbench
 `timescale 1ns/10ps
 
 module rol_tb;

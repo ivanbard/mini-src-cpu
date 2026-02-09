@@ -1,5 +1,4 @@
-// shl_tb.v - Testbench for SHL instruction (Section 3.9)
-// Instruction: shl R7, R0, R4 (R7 = R0 << R4)
+// shl R7, R0, R4 testbench
 `timescale 1ns/10ps
 
 module shl_tb;

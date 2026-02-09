@@ -1,5 +1,4 @@
-// ror_tb.v - Testbench for ROR instruction (Section 3.10)
-// Instruction: ror R7, R0, R4 (R7 = R0 rotated right by R4)
+// ror R7, R0, R4 testbench
 `timescale 1ns/10ps
 
 module ror_tb;

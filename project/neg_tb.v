@@ -1,5 +1,4 @@
-// neg_tb.v - Testbench for NEG instruction (Section 3.12)
-// Instruction: neg R4, R7 (R4 = -R7)
+// neg R4, R7 testbench
 `timescale 1ns/10ps
 
 module neg_tb;

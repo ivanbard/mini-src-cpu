@@ -1,5 +1,4 @@
-// add_tb.v - Testbench for ADD instruction (Section 3.3)
-// Instruction: add R2, R5, R6
+// add R2, R5, R6 testbench
 `timescale 1ns/10ps
 
 module add_tb;
@@ -67,13 +66,13 @@ module add_tb;
                 alu_op <= 5'b0; Zin <= 0;
                 inport_val <= 32'b0; c_val <= 32'b0;
             end
-            // Load R5 with 25
+            // load R5 = 25
             Reg_load1a: begin Mdatain <= 32'h00000019; Read <= 1; MDRin <= 1; end
             Reg_load1b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000100000; end
-            // Load R6 with 17
+            // load R6 = 17
             Reg_load2a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000011; Read <= 1; MDRin <= 1; end
             Reg_load2b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000001000000; end
-            // Load R2 with 0 (will be overwritten)
+            // load R2 = 0
             Reg_load3a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000000; Read <= 1; MDRin <= 1; end
             Reg_load3b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000000100; end
             // T0: PCout, MARin, IncPC, Zin

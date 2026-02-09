@@ -1,6 +1,4 @@
-// div_tb.v - Testbench for DIV instruction (Section 3.6)
-// Instruction: div R3, R1
-// Note: Quotient goes to LO, Remainder goes to HI
+// div R3, R1 testbench
 `timescale 1ns/10ps
 
 module div_tb;
@@ -68,25 +66,25 @@ module div_tb;
                 alu_op <= 5'b0; Zin <= 0;
                 inport_val <= 32'b0; c_val <= 32'b0;
             end
-            // Load R3 with 17 (dividend)
+            // load R3 = 17 (dividend)
             Reg_load1a: begin Mdatain <= 32'h00000011; Read <= 1; MDRin <= 1; end
-            Reg_load1b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000001000; end  // R3in
-            // Load R1 with 5 (divisor)
+            Reg_load1b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000001000; end
+            // load R1 = 5 (divisor)
             Reg_load2a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000005; Read <= 1; MDRin <= 1; end
-            Reg_load2b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000000010; end  // R1in
+            Reg_load2b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000000010; end
             // T0: PCout, MARin, IncPC, Zin
             T0: begin rin <= 16'b0; bus_sel <= SEL_PC; mar_in <= 1; IncPC <= 1; alu_op <= ALU_ADD; Zin <= 1; end
             // T1: Zlowout, PCin, Read, Mdatain, MDRin
             T1: begin mar_in <= 0; IncPC <= 0; Zin <= 0; bus_sel <= SEL_ZLOW; pc_in <= 1; Read <= 1; MDRin <= 1; Mdatain <= 32'h78600000; end
             // T2: MDRout, IRin
             T2: begin pc_in <= 0; Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; ir_in <= 1; end
-            // T3: R3out, Yin (dividend to Y)
+            // T3: R3out, Yin
             T3: begin ir_in <= 0; bus_sel <= SEL_R3; y_in <= 1; end
-            // T4: R1out, DIV, Zin (divisor to ALU)
+            // T4: R1out, DIV, Zin
             T4: begin y_in <= 0; bus_sel <= SEL_R1; alu_op <= ALU_DIV; Zin <= 1; end
-            // T5: Zlowout, LOin (quotient to LO)
+            // T5: Zlowout, LOin
             T5: begin Zin <= 0; bus_sel <= SEL_ZLOW; lo_in <= 1; end
-            // T6: Zhighout, HIin (remainder to HI)
+            // T6: Zhighout, HIin
             T6: begin lo_in <= 0; bus_sel <= SEL_ZHIGH; hi_in <= 1; end
             Done: begin hi_in <= 0; bus_sel <= 5'b0; end
         endcase

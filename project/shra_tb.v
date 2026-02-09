@@ -1,5 +1,4 @@
-// shra_tb.v - Testbench for SHRA instruction (Section 3.8)
-// Instruction: shra R7, R0, R4 (R7 = R0 >>> R4, arithmetic shift right)
+// shra R7, R0, R4 testbench
 `timescale 1ns/10ps
 
 module shra_tb;

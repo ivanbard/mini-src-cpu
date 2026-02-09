@@ -1,5 +1,4 @@
-// not_tb.v - Testbench for NOT instruction (Section 3.13)
-// Instruction: not R4, R7 (R4 = ~R7)
+// not R4, R7 testbench
 `timescale 1ns/10ps
 
 module not_tb;

@@ -1,12 +1,11 @@
-// ALU for Mini SRC Processor - Phase 1
-// Operations: ADD, SUB, MUL, DIV, AND, OR, NOT, NEG, SHR, SHRA, SHL, ROR, ROL
-// NOTE: No +/- operators used except in MUL and DIV circuitry per project requirements
+// ALU - Phase 1
+// no +/- operators except in mul/div units
 
 module alu(
-    input wire [31:0] A,          // First operand (from Y register)
-    input wire [31:0] B,          // Second operand (from bus)
-    input wire [4:0] op,          // Operation select
-    output reg [63:0] C           // 64-bit result (for MUL/DIV support)
+    input wire [31:0] A,
+    input wire [31:0] B,
+    input wire [4:0] op,
+    output reg [63:0] C
 );
 
     // Operation codes
@@ -24,30 +23,18 @@ module alu(
     localparam OP_ROR  = 5'b01011;
     localparam OP_ROL  = 5'b01100;
 
-    // Internal wires for adder/subtractor
-    wire [31:0] add_result;
-    wire [31:0] sub_result;
+    wire [31:0] add_result, sub_result;
     wire add_cout, sub_cout;
     
-    // Internal wires for multiplication (64-bit result)
     wire [63:0] mul_result;
     
-    // Internal wires for division
-    wire [31:0] div_quotient;
-    wire [31:0] div_remainder;
+    wire [31:0] div_quotient, div_remainder;
     
-    // Internal wires for shifter
-    wire [31:0] shr_result;
-    wire [31:0] shra_result;
-    wire [31:0] shl_result;
-    wire [31:0] ror_result;
-    wire [31:0] rol_result;
+    wire [31:0] shr_result, shra_result, shl_result, ror_result, rol_result;
     
-    // Internal wire for negation (using adder)
     wire [31:0] neg_result;
     wire neg_cout;
 
-    // Ripple carry adder (no + operator)
     ripple_carry_adder rca_add (
         .A(A),
         .B(B),
@@ -56,7 +43,7 @@ module alu(
         .Cout(add_cout)
     );
 
-    // Subtractor: A - B = A + (~B) + 1 (using adder with inverted B and Cin=1)
+    // subtractor: A - B = A + (~B) + 1
     ripple_carry_adder rca_sub (
         .A(A),
         .B(~B),
@@ -65,7 +52,7 @@ module alu(
         .Cout(sub_cout)
     );
 
-    // Negation: -B = 0 + (~B) + 1 = ~B + 1
+    // negation: -B = ~B + 1
     ripple_carry_adder rca_neg (
         .A(32'b0),
         .B(~B),
@@ -74,14 +61,12 @@ module alu(
         .Cout(neg_cout)
     );
 
-    // Booth multiplier (32x32 with bit-pair recoding)
     booth_multiplier booth_mul (
         .A(A),
         .B(B),
         .Product(mul_result)
     );
 
-    // Non-restoring divider
     divider div_unit (
         .Dividend(A),
         .Divisor(B),
@@ -89,10 +74,9 @@ module alu(
         .Remainder(div_remainder)
     );
 
-    // Barrel shifter
     barrel_shifter shifter (
         .A(A),
-        .B(B[4:0]),  // Shift amount (0-31)
+        .B(B[4:0]),
         .shr_out(shr_result),
         .shra_out(shra_result),
         .shl_out(shl_result),
@@ -100,13 +84,12 @@ module alu(
         .rol_out(rol_result)
     );
 
-    // ALU output selection
     always @(*) begin
         case (op)
             OP_ADD:  C = {32'b0, add_result};
             OP_SUB:  C = {32'b0, sub_result};
             OP_MUL:  C = mul_result;
-            OP_DIV:  C = {div_remainder, div_quotient};  // HI=remainder, LO=quotient
+            OP_DIV:  C = {div_remainder, div_quotient};
             OP_AND:  C = {32'b0, A & B};
             OP_OR:   C = {32'b0, A | B};
             OP_NOT:  C = {32'b0, ~B};

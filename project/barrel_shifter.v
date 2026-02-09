@@ -1,18 +1,16 @@
-// Barrel Shifter - 32-bit
-// Supports: SHR (logical right), SHRA (arithmetic right), SHL (left), ROR, ROL
+// 5-stage barrel shifter
 
 module barrel_shifter(
-    input wire [31:0] A,           // Value to shift
-    input wire [4:0] B,            // Shift amount (0-31)
-    output wire [31:0] shr_out,    // Logical shift right
-    output wire [31:0] shra_out,   // Arithmetic shift right
-    output wire [31:0] shl_out,    // Shift left
-    output wire [31:0] ror_out,    // Rotate right
-    output wire [31:0] rol_out     // Rotate left
+    input wire [31:0] A,
+    input wire [4:0] B,  // shift amount
+    output wire [31:0] shr_out,
+    output wire [31:0] shra_out,
+    output wire [31:0] shl_out,
+    output wire [31:0] ror_out,
+    output wire [31:0] rol_out
 );
 
-    // Shift Right Logical (SHR)
-    // Fill with zeros from the left
+    // SHR - logical right shift
     wire [31:0] shr_stage0, shr_stage1, shr_stage2, shr_stage3, shr_stage4;
     
     assign shr_stage0 = B[0] ? {1'b0, A[31:1]} : A;
@@ -22,8 +20,7 @@ module barrel_shifter(
     assign shr_stage4 = B[4] ? {16'b0, shr_stage3[31:16]} : shr_stage3;
     assign shr_out = shr_stage4;
 
-    // Shift Right Arithmetic (SHRA)
-    // Fill with sign bit from the left
+    // SHRA - arithmetic right shift (preserve sign)
     wire sign_bit = A[31];
     wire [31:0] shra_stage0, shra_stage1, shra_stage2, shra_stage3, shra_stage4;
     
@@ -34,8 +31,7 @@ module barrel_shifter(
     assign shra_stage4 = B[4] ? {{16{sign_bit}}, shra_stage3[31:16]} : shra_stage3;
     assign shra_out = shra_stage4;
 
-    // Shift Left (SHL)
-    // Fill with zeros from the right
+    // SHL - shift left
     wire [31:0] shl_stage0, shl_stage1, shl_stage2, shl_stage3, shl_stage4;
     
     assign shl_stage0 = B[0] ? {A[30:0], 1'b0} : A;
@@ -45,8 +41,7 @@ module barrel_shifter(
     assign shl_stage4 = B[4] ? {shl_stage3[15:0], 16'b0} : shl_stage3;
     assign shl_out = shl_stage4;
 
-    // Rotate Right (ROR)
-    // Bits that fall off the right wrap around to the left
+    // ROR - rotate right
     wire [31:0] ror_stage0, ror_stage1, ror_stage2, ror_stage3, ror_stage4;
     
     assign ror_stage0 = B[0] ? {A[0], A[31:1]} : A;
@@ -56,8 +51,7 @@ module barrel_shifter(
     assign ror_stage4 = B[4] ? {ror_stage3[15:0], ror_stage3[31:16]} : ror_stage3;
     assign ror_out = ror_stage4;
 
-    // Rotate Left (ROL)
-    // Bits that fall off the left wrap around to the right
+    // ROL - rotate left
     wire [31:0] rol_stage0, rol_stage1, rol_stage2, rol_stage3, rol_stage4;
     
     assign rol_stage0 = B[0] ? {A[30:0], A[31]} : A;

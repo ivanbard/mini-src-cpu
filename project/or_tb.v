@@ -1,6 +1,4 @@
-// or_tb.v - Testbench for OR instruction
-// Instruction: or R2, R5, R6
-// Tests logical OR circuitry following Phase 1 control sequence (Section 3.2)
+// or R2, R5, R6 testbench
 `timescale 1ns/10ps
 
 module or_tb;
