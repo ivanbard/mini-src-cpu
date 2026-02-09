@@ -48,32 +48,9 @@ module booth_multiplier(
         .pp(pp[16])
     );
     
-    // wallace tree - add partial products in levels
-    wire signed [63:0] sum_level1 [8:0];
-    wire signed [63:0] sum_level2 [4:0];
-    wire signed [63:0] sum_level3 [2:0];
-    wire signed [63:0] sum_level4 [1:0];
-    assign sum_level1[0] = pp[0] + pp[1];
-    assign sum_level1[1] = pp[2] + pp[3];
-    assign sum_level1[2] = pp[4] + pp[5];
-    assign sum_level1[3] = pp[6] + pp[7];
-    assign sum_level1[4] = pp[8] + pp[9];
-    assign sum_level1[5] = pp[10] + pp[11];
-    assign sum_level1[6] = pp[12] + pp[13];
-    assign sum_level1[7] = pp[14] + pp[15];
-    assign sum_level1[8] = pp[16];
-    assign sum_level2[0] = sum_level1[0] + sum_level1[1];
-    assign sum_level2[1] = sum_level1[2] + sum_level1[3];
-    assign sum_level2[2] = sum_level1[4] + sum_level1[5];
-    assign sum_level2[3] = sum_level1[6] + sum_level1[7];
-    assign sum_level2[4] = sum_level1[8];
-    assign sum_level3[0] = sum_level2[0] + sum_level2[1];
-    assign sum_level3[1] = sum_level2[2] + sum_level2[3];
-    assign sum_level3[2] = sum_level2[4];
-    assign sum_level4[0] = sum_level3[0] + sum_level3[1];
-    assign sum_level4[1] = sum_level3[2];
-    
-    assign Product = sum_level4[0] + sum_level4[1];
+    // sum all partial products
+    assign Product = pp[0] + pp[1] + pp[2] + pp[3] + pp[4] + pp[5] + pp[6] + pp[7] +
+                     pp[8] + pp[9] + pp[10] + pp[11] + pp[12] + pp[13] + pp[14] + pp[15] + pp[16];
 
 endmodule
 
