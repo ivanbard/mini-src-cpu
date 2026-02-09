@@ -69,11 +69,14 @@ module or_tb;
                 alu_op <= 5'b0; Zin <= 0;
                 inport_val <= 32'b0; c_val <= 32'b0;
             end
-            Reg_load1a: begin Mdatain <= 32'h0000000F; Read <= 1; MDRin <= 1; end
+            // Load R5 with 0x34
+            Reg_load1a: begin Mdatain <= 32'h00000034; Read <= 1; MDRin <= 1; end
             Reg_load1b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000100000; end
-            Reg_load2a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h000000F0; Read <= 1; MDRin <= 1; end
+            // Load R6 with 0x45
+            Reg_load2a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000045; Read <= 1; MDRin <= 1; end
             Reg_load2b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000001000000; end
-            Reg_load3a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000000; Read <= 1; MDRin <= 1; end
+            // Load R2 with 0x67
+            Reg_load3a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000067; Read <= 1; MDRin <= 1; end
             Reg_load3b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000000100; end
             T0: begin rin <= 16'b0; bus_sel <= SEL_PC; mar_in <= 1; IncPC <= 1; alu_op <= ALU_ADD; Zin <= 1; end
             T1: begin mar_in <= 0; IncPC <= 0; Zin <= 0; bus_sel <= SEL_ZLOW; pc_in <= 1; Read <= 1; MDRin <= 1; Mdatain <= 32'h52920000; end
@@ -92,11 +95,11 @@ module or_tb;
         $display("==============================================");
         $display("OR Instruction Test: or R2, R5, R6");
         $display("==============================================");
-        $display("R5 (operand 1) = 0x%h", DUT.r5_out);
-        $display("R6 (operand 2) = 0x%h", DUT.r6_out);
-        $display("R2 (result)    = 0x%h (expected: 0x000000FF)", DUT.r2_out);
-        $display("Expected: 0x0F OR 0xF0 = 0xFF");
-        if (DUT.r2_out == 32'h000000FF) $display("TEST PASSED!");
+        $display("R5 (operand 1) = 0x%h (expected: 0x00000034)", DUT.r5_out);
+        $display("R6 (operand 2) = 0x%h (expected: 0x00000045)", DUT.r6_out);
+        $display("R2 (result)    = 0x%h (expected: 0x00000075)", DUT.r2_out);
+        $display("Expected: 0x34 OR 0x45 = 0x75");
+        if (DUT.r2_out == 32'h00000075) $display("TEST PASSED!");
         else $display("TEST FAILED!");
         $display("==============================================");
         #20; $finish;
