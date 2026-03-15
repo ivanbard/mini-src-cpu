@@ -16,7 +16,6 @@ module datapath_top(
     // MDR control signals
     input wire MDRin,
     input wire Read,
-    input wire [31:0] Mdatain,  //Input from memory
 
     // ALU control
     input wire [4:0] alu_op,    // ALU operation select
@@ -38,7 +37,10 @@ module datapath_top(
     output wire [31:0] zlow_out,
     
     // mdr output (to memory)
-    output wire [31:0] Mdataout
+    output wire [31:0] Mdataout,
+
+    // RAM control
+    input wire ram_in
 );
 
     wire [31:0] r0_out, r1_out, r2_out, r3_out, r4_out, r5_out, r6_out, r7_out;
@@ -91,17 +93,27 @@ module datapath_top(
         .lo_val(lo_val)
     );
 
+    wire [31:0] ram_val;
+
     mdr mdr_inst (
         .clk(clk),
         .reset(reset),
         .MDRin(MDRin),
         .Read(Read),
         .BusMuxOut(BusMuxOut),
-        .Mdatain(Mdatain),
+        .Mdatain(ram_val),
         .MDR_val(mdr_val)
     );
 
     assign Mdataout = mdr_val;
+
+    ram ram_inst (
+        .clk(clk),
+        .ram_read(Read),        
+        .ram_addr(mar_val[8:0]), 
+        .ram_in(BusMuxOut),
+        .ram_val(ram_val) // goes into MDR
+    );
 
     alu alu_inst (
         .A(y_val),
