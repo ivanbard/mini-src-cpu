@@ -13,6 +13,11 @@ module ram (
 
     reg [31:0] mem [0:511];
 
+    // change line values in memory.hex to initialize memory differently
+    initial begin
+        $readmemh("memory.hex", mem);
+    end    
+
     always @(posedge clk) begin
         if (ram_en !ram_read) begin
             mem[ram_addr] <= ram_in;
