@@ -21,8 +21,14 @@ module datapath_top(
     input wire [4:0] alu_op,    // ALU operation select
     input wire Zin,             // Z register load enable
 
-    input wire [31:0] inport_val,
     input wire [31:0] c_val,
+
+    // RAM control
+    input wire ram_in,
+
+    input wire [31:0] device_in,
+    input wire inport_in,
+    input wire outport_in,
 
     output wire [31:0] BusMuxOut,
     
@@ -39,8 +45,8 @@ module datapath_top(
     // mdr output (to memory)
     output wire [31:0] Mdataout,
 
-    // RAM control
-    input wire ram_in
+    output wire [31:0] outport_val
+
 );
 
     wire [31:0] r0_out, r1_out, r2_out, r3_out, r4_out, r5_out, r6_out, r7_out;
@@ -58,6 +64,10 @@ module datapath_top(
     assign zlow_out = zlow_val;
     
     wire [63:0] alu_result;
+
+    wire [31:0] ram_val;
+
+    wire [31:0] inport_val;
 
     regfile16 rf (
         .clk(clk),
@@ -93,8 +103,6 @@ module datapath_top(
         .lo_val(lo_val)
     );
 
-    wire [31:0] ram_val;
-
     mdr mdr_inst (
         .clk(clk),
         .reset(reset),
@@ -120,6 +128,22 @@ module datapath_top(
         .B(BusMuxOut),
         .op(alu_op),
         .C(alu_result)
+    );
+
+    outport outport_inst (
+        .clk(clk),
+        .reset(reset),
+        .outport_in(outport_in),
+        .BusMuxOut(BusMuxOut), 
+        .outport_val(outport_val)
+    );
+
+    inport inport_inst (
+        .clk(clk),
+        .reset(reset),
+        .inport_in(inport_in),
+        .device_in(device_in),
+        .inport_val(inport_val)
     );
 
     // Z register loads ALU result
