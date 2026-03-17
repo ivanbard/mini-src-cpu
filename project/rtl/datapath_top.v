@@ -1,8 +1,7 @@
 module datapath_top(
     input wire clk,
     input wire reset,
-    input wire [15:0] rin,
-    input wire [4:0]  bus_sel,
+    input wire [4:0] bus_sel,
 
     // Key register control signals
     input wire pc_in,
@@ -21,14 +20,22 @@ module datapath_top(
     input wire [4:0] alu_op,    // ALU operation select
     input wire Zin,             // Z register load enable
 
+    // Drives C_extended for the time being, replace in phase 3
+    // Put in 19 bit inputs now, C extended will extend if necessary
     input wire [31:0] c_val,
 
     // RAM control
     input wire ram_in,
 
+    // Input Output control
     input wire [31:0] device_in,
     input wire inport_in,
     input wire outport_in,
+
+    // Select Encode control
+    input wire Gra, Grb, Grc,
+    input wire Rin, Rout, BAout,
+    input wire Cout,
 
     output wire [31:0] BusMuxOut,
     
@@ -69,10 +76,21 @@ module datapath_top(
 
     wire [31:0] inport_val;
 
+    // Wires for select encode
+    wire [15:0] Rin_decoded;
+    wire [15:0] Rout_decoded;
+    wire BAout_R0;
+
+    // Wires for c_extend module
+    wire [31:0] c_raw = {13'b0, c_val[18:0]};
+    wire [31:0] c_extended;
+
+    wire [4:0] sel_encoded;
+
     regfile16 rf (
         .clk(clk),
         .reset(reset),
-        .rin(rin),
+        .rin(Rin_decoded), // Now controlled by select encode
         .bus(BusMuxOut),
         .r0_out(r0_out), .r1_out(r1_out), .r2_out(r2_out), .r3_out(r3_out),
         .r4_out(r4_out), .r5_out(r5_out), .r6_out(r6_out), .r7_out(r7_out),
@@ -123,6 +141,35 @@ module datapath_top(
         .ram_val(ram_val) // goes into MDR
     );
 
+    select_encode Select_encode_inst (
+        .IRin(ir_val),
+        .Gra(Gra),
+        .Grb(Grb),
+        .Grc(Grc),
+        .Rin(Rin),
+        .Rout(Rout),
+        .BAout(BAout),
+        .Rin_decoded(Rin_decoded),
+        .Rout_decoded(Rout_decoded),
+        .BAout_R0(BAout_R0)
+    );
+
+    extend_c extend_c_inst (
+        .IRin(c_val),
+        .Cout(Cout),
+        .C_extended(c_extended)
+    );
+
+    // Choose appropriate c value based on c_extend
+    wire [31:0] c_bus_val = Cout ? c_extended : c_raw;
+
+    // Phase 2 input for bus_sel and select encode R0 to R15 bus output
+    mux_encoder mux_encoder_inst (
+        .Rout_decoded(Rout_decoded),
+        .other_sel(bus_sel),
+        .mux_sel(sel_encoded)
+    );
+
     alu alu_inst (
         .A(y_val),
         .B(BusMuxOut),
@@ -156,7 +203,7 @@ module datapath_top(
     end
 
     bus_mux_enc bmux (
-        .bus_sel(bus_sel),
+        .bus_sel(sel_encoded),
 
         .r0(r0_out), .r1(r1_out), .r2(r2_out), .r3(r3_out),
         .r4(r4_out), .r5(r5_out), .r6(r6_out), .r7(r7_out),
@@ -171,7 +218,7 @@ module datapath_top(
         .mdr_val(mdr_val),
 
         .inport_val(inport_val),
-        .c_val(c_val),
+        .c_val(c_bus_val),
 
         .BusMuxOut(BusMuxOut)
     );
