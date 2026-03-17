@@ -1,0 +1,6 @@
+Add all required .v file names to project.f
+something like command below makes compilation easy
+
+iverilog -f project.f simulation/P2/addi_tb.v
+vvp a.out
+gtkwave addi_tb.vcd

@@ -8,20 +8,20 @@ module ram (
     input wire ram_en,
     input wire [8:0] ram_addr,
     input wire [31:0] ram_in,  
-    output wire [31:0] ram_val;
+    output wire [31:0] ram_val
 );
 
     reg [31:0] mem [0:511];
 
-    // change line values in memory.hex to initialize memory differently
+    integer i;
     initial begin
-        $readmemh("memory.hex", mem);
-    end    
+        for (i = 0; i < 512; i = i + 1)
+            mem[i] = 32'h00000000;
+    end
 
     always @(posedge clk) begin
-        if (ram_en !ram_read) begin
+        if (ram_en && !ram_read)
             mem[ram_addr] <= ram_in;
-        end
     end
 
     assign ram_val = (ram_en && ram_read) ? mem[ram_addr] : 32'b0;

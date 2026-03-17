@@ -70,7 +70,7 @@ module mux_encoder (
 );
 
     always @(*) begin
-        casez (Rout_dec)
+        case (Rout_decoded)
             16'b0000_0000_0000_0001: mux_sel = 5'd0;
             16'b0000_0000_0000_0010: mux_sel = 5'd1;
             16'b0000_0000_0000_0100: mux_sel = 5'd2;

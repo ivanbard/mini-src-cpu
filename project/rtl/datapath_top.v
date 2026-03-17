@@ -88,7 +88,7 @@ module datapath_top(
     wire BAout_R0;
 
     // Wires for c_extend module
-    wire [31:0] c_raw = {13'b0, c_val[18:0]};
+    wire [31:0] c_raw = c_val;
     wire [31:0] c_extended;
 
     wire [4:0] sel_encoded;
@@ -142,13 +142,14 @@ module datapath_top(
 
     ram ram_inst (
         .clk(clk),
-        .ram_read(Read),        
+        .ram_read(Read),      
+        .ram_en(ram_in),  
         .ram_addr(mar_val[8:0]), 
         .ram_in(BusMuxOut),
         .ram_val(ram_val) // goes into MDR
     );
 
-    select_encode Select_encode_inst (
+    select_encode select_encode_inst (
         .IRin(ir_val),
         .Gra(Gra),
         .Grb(Grb),
@@ -162,7 +163,7 @@ module datapath_top(
     );
 
     extend_c extend_c_inst (
-        .IRin(c_val),
+        .IRin(ir_val),
         .Cout(Cout),
         .C_extended(c_extended)
     );

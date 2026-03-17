@@ -1,19 +1,15 @@
-// Use this file for compilation, add all .v files
-// something like command below makes compilation easy
-//
-// iverilog -f project.f simulation/tb_datapath_top.v -o output/datapath_tb.vvp
-
-alu.v
-barrel_shifter.v
-booth_multiplier.v
-bus_mux.v
-datapath_top.v
-divider.v
-extend_c.v
-key_regs.v
-mdr.v
-pc_reg.v
-ram.v
-registers.v
-ripple_carry_adder.v
-select_encode.v
+rtl/alu.v
+rtl/barrel_shifter.v
+rtl/booth_multiplier.v
+rtl/bus_mux.v
+rtl/datapath_top.v
+rtl/divider.v
+rtl/key_regs.v
+rtl/mdr.v
+rtl/pc_reg.v
+rtl/ram.v
+rtl/registers.v
+rtl/ripple_carry_adder.v
+rtl/select_encode.v
+rtl/con_ff.v
+rtl/io.v
