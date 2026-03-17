@@ -16,9 +16,31 @@ module reg32 (
 
 endmodule
 
+module reg32_r0 (
+    input wire clk,
+    input wire reset,
+    input wire en,
+    input wire r0_zeroes,
+    input wire [31:0] d_in,
+    output wire [31:0] d_out
+);
+    reg [31:0] d; 
+
+    always @(posedge clk) begin
+        if (reset)
+            d <= 32'b0;
+        else if (en)
+            d <= d_in;
+    end
+
+    assign d_out = r0_zeroes ? 32'b0 : d;
+
+endmodule
+
 module regfile16(
     input wire clk,
     input wire reset,
+    input wire r0_zeroes,
     input wire [15:0] rin,
     input wire [31:0] bus,
     output wire [31:0] r0_out,
@@ -39,14 +61,15 @@ module regfile16(
     output wire [31:0] r15_out
 );
 
-    reg32 r0 (
+    // r0 adjusted for special case zero output
+    reg32_r0 r0 (
         .clk(clk),
         .reset(reset),
         .en(rin[0]),
+        .r0_zeroes(r0_zeroes),
         .d_in(bus),
         .d_out(r0_out)
     );
-
     reg32 r1 (
         .clk(clk),
         .reset(reset),

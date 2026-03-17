@@ -37,6 +37,9 @@ module datapath_top(
     input wire Rin, Rout, BAout,
     input wire Cout,
 
+    // Enable for con_ff
+    input wire con_en,
+
     output wire [31:0] BusMuxOut,
     
     // Key register outputs
@@ -49,10 +52,13 @@ module datapath_top(
     output wire [31:0] zhigh_out,
     output wire [31:0] zlow_out,
     
-    // mdr output (to memory)
+    // Mdr output (to memory)
     output wire [31:0] Mdataout,
 
-    output wire [31:0] outport_val
+    output wire [31:0] outport_val,
+
+    // Control signal output for condition met
+    output wire con
 
 );
 
@@ -91,6 +97,7 @@ module datapath_top(
         .clk(clk),
         .reset(reset),
         .rin(Rin_decoded), // Now controlled by select encode
+        .r0_zeroes(BAout_R0),
         .bus(BusMuxOut),
         .r0_out(r0_out), .r1_out(r1_out), .r2_out(r2_out), .r3_out(r3_out),
         .r4_out(r4_out), .r5_out(r5_out), .r6_out(r6_out), .r7_out(r7_out),
@@ -168,6 +175,15 @@ module datapath_top(
         .Rout_decoded(Rout_decoded),
         .other_sel(bus_sel),
         .mux_sel(sel_encoded)
+    );
+
+    con_ff conff_inst (
+        .clk(clk),
+        .reset(reset),
+        .con_en(con_en),
+        .BusMuxOut(BusMuxOut),
+        .c2(ir_val[20:19]),
+        .con(con)
     );
 
     alu alu_inst (

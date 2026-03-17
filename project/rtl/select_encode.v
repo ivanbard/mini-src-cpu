@@ -13,7 +13,7 @@ module select_encode (
     wire [3:0] Rb = IRin[22:19];
     wire [3:0] Rc = IRin[18:15];
 
-    // select registers
+    // Select registers
     wire [3:0] reg_sel = 
         Gra ? Ra : 
         Grb ? Rb :
