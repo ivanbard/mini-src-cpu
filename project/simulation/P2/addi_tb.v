@@ -1,4 +1,3 @@
-
 // addi R7, R4, -9  |  R4=0x20  |  expect R7=0x17
 `timescale 1ns/10ps
 
