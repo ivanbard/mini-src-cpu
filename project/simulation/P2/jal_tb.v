@@ -1,4 +1,4 @@
-// jal R4  |  R4=0xAA  |  expect R15=1 (return addr), PC=0xAA
+// jal R4  |  preload R4=0xAA, R12(RA), PC=0x10  |  expect R12=0x11, PC=0xAA
 `timescale 1ns/10ps
 
 module jal_tb;
@@ -19,9 +19,10 @@ module jal_tb;
     localparam OP_ADD=5'b00000, OP_AND=5'b00100, OP_OR=5'b00101;
 
     parameter Default=5'd0, RL0=5'd1, RL1=5'd2, RL2=5'd3, RL3=5'd4, RL4=5'd5,
-              T0=5'd6, T1=5'd7, T2=5'd8,
-              S0=5'd9,  S1=5'd10, S2=5'd11, S3=5'd12, S4=5'd13,
-              S5=5'd14, S6=5'd15, S7=5'd16, S8=5'd17, S9=5'd18, Done=5'd19;
+              RL5=5'd6,
+              T0=5'd7, T1=5'd8, T2=5'd9,
+              S0=5'd10, S1=5'd11, S2=5'd12, S3=5'd13, S4=5'd14,
+              S5=5'd15, S6=5'd16, S7=5'd17, S8=5'd18, S9=5'd19, Done=5'd20;
     reg [4:0] Present_state = Default;
 
     datapath_top DUT (
@@ -47,7 +48,8 @@ module jal_tb;
         RL1:     Present_state <= RL2;
         RL2:     Present_state <= RL3;
         RL3:     Present_state <= RL4;
-        RL4:     Present_state <= T0;
+        RL4:     Present_state <= RL5;
+        RL5:     Present_state <= T0;
         T0:      Present_state <= T1;
         T1:      Present_state <= T2;
         T2:      Present_state <= S0;
@@ -80,17 +82,18 @@ module jal_tb;
             RL2: begin bus_sel<=SEL_MDR; ir_in<=1; end
             RL3: ; // idle — IR.d_out settles to dummy (0x02000000)
             RL4: begin c_val<=32'h000000AA; bus_sel<=SEL_C; Gra<=1; Rin<=1; end
+            RL5: begin c_val<=32'h00000010; bus_sel<=SEL_C; pc_in<=1; end
             T0: begin bus_sel<=SEL_PC; mar_in<=1; IncPC<=1; end
             T1: begin Read<=1; MDRin<=1; ram_in<=1; end
             T2: begin bus_sel<=SEL_MDR; ir_in<=1; end
-            // PC=1 now; swap IR to DUMMY_R15 to save PC into R15
+            // PC=0x11 now; swap IR to DUMMY_R12 to save PC into R12
             S0: begin c_val<=32'h000001FE; bus_sel<=SEL_C; mar_in<=1; end
             S1: begin Read<=1; MDRin<=1; ram_in<=1; end
             S2: begin bus_sel<=SEL_MDR; ir_in<=1; end
-            S3: ; // IR settles — Ra=R15
+            S3: ; // IR settles — Ra=R12
             S4: begin bus_sel<=SEL_PC; Gra<=1; Rin<=1; end
             // Reload JAL_R4 and jump to R4
-            S5: begin c_val<=32'h00000000; bus_sel<=SEL_C; mar_in<=1; end
+            S5: begin c_val<=32'h00000010; bus_sel<=SEL_C; mar_in<=1; end
             S6: begin Read<=1; MDRin<=1; ram_in<=1; end
             S7: begin bus_sel<=SEL_MDR; ir_in<=1; end
             S8: ; // IR settles — Ra=R4
@@ -101,16 +104,16 @@ module jal_tb;
     initial begin
         $dumpfile("jal_tb.vcd"); $dumpvars(0,jal_tb);
         DUT.ram_inst.mem[9'h1FF]=32'h02000000; // dummy Ra=R4
-        DUT.ram_inst.mem[9'h1FE]=32'h07800000; // dummy Ra=R15
-        DUT.ram_inst.mem[9'h000]=32'h52000000; // jal R4
+        DUT.ram_inst.mem[9'h1FE]=32'h06000000; // dummy Ra=R12
+        DUT.ram_inst.mem[9'h010]=32'h52000000; // jal R4
         reset=1; #25; reset=0;
         wait(Present_state==Done); #40;
         $display("============================================");
-        $display("JAL: jal R4  [R4=0xAA]");
+        $display("JAL: jal R4  [R4=0xAA, R12=RA, PC preload=0x10]");
         $display("  R4  = 0x%08h  (exp 0x000000AA)", DUT.rf.r4_out);
-        $display("  R15 = 0x%08h  (exp 0x00000001)", DUT.rf.r15_out);
+        $display("  R12 = 0x%08h  (exp 0x00000011)", DUT.rf.r12_out);
         $display("  PC  = 0x%08h  (exp 0x000000AA)", pc_val);
-        if(DUT.rf.r15_out===32'h00000001 && pc_val===32'h000000AA) $display("  >>> PASSED <<<");
+        if(DUT.rf.r12_out===32'h00000011 && pc_val===32'h000000AA) $display("  >>> PASSED <<<");
         else $display("  >>> FAILED <<<");
         $display("============================================");
         #20; $finish;

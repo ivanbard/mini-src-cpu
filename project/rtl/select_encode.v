@@ -57,7 +57,7 @@ module extend_c (
 );
 
     wire sign = IRin[18];
-    assign C_extended = Cout ? {{13{sign}}, IRin[18:0]} : {13'b0, IRin[18:0]};
+    assign C_extended = {{13{sign}}, IRin[18:0]};
 
 endmodule
 
