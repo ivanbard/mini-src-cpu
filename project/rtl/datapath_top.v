@@ -58,7 +58,10 @@ module datapath_top(
     output wire [31:0] outport_val,
 
     // Control signal output for condition met
-    output wire con
+    output wire con,
+
+    // ALU overflow flag
+    output wire Overflow
 
 );
 
@@ -191,7 +194,8 @@ module datapath_top(
         .A(y_val),
         .B(BusMuxOut),
         .op(alu_op),
-        .C(alu_result)
+        .C(alu_result),
+        .Overflow(Overflow)
     );
 
     outport outport_inst (

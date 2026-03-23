@@ -17,7 +17,8 @@ module pc_reg(
         .B(32'b1),
         .Cin(1'b0),
         .Sum(pc_plus_one),
-        .Cout(cout)
+        .Cout(cout),
+        .Overflow()
     );
 
     always @(posedge clk or posedge reset) begin

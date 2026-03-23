@@ -5,7 +5,8 @@ module ripple_carry_adder(
     input wire [31:0] B,
     input wire Cin,
     output wire [31:0] Sum,
-    output wire Cout
+    output wire Cout,
+    output wire Overflow
 );
 
     wire [32:0] carry;
@@ -25,6 +26,7 @@ module ripple_carry_adder(
     endgenerate
 
     assign Cout = carry[32];
+    assign Overflow = carry[31] ^ carry[32];
 
 endmodule
 
@@ -40,3 +42,8 @@ module full_adder(
     assign cout = (a & b) | (cin & (a ^ b));
 
 endmodule
+
+
+
+// overflow, branch not taken test benches for each branch test case 
+// 
