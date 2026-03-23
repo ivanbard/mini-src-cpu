@@ -1,0 +1,47 @@
+[*]
+[*] GTKWave Save File - st_case2_tb
+[*]
+[dumpfile] "st_case2_tb.vcd"
+[savefile] "st_case2_tb.gtkw"
+[timestart] 0
+[size] 1920 1080
+[pos] -1 -1
+*-16.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] st_case2_tb.
+[treeopen] st_case2_tb.DUT.
+[sst_width] 280
+[signals_width] 320
+[sst_expanded] 1
+[sst_vpaned_height] 300
+@28
+st_case2_tb.clk
+st_case2_tb.reset
+st_case2_tb.Present_state[4:0]
+st_case2_tb.bus_sel[4:0]
+st_case2_tb.alu_op[4:0]
+st_case2_tb.Read
+st_case2_tb.ram_in
+st_case2_tb.MDRin
+st_case2_tb.mar_in
+st_case2_tb.ir_in
+st_case2_tb.Zin
+st_case2_tb.Gra
+st_case2_tb.Grb
+st_case2_tb.Grc
+st_case2_tb.Rin
+st_case2_tb.Rout
+st_case2_tb.BAout
+st_case2_tb.Cout
+st_case2_tb.con_en
+st_case2_tb.BusMuxOut[31:0]
+st_case2_tb.pc_val[31:0]
+st_case2_tb.ir_val[31:0]
+st_case2_tb.mar_val[31:0]
+st_case2_tb.Mdataout[31:0]
+st_case2_tb.zlow_out[31:0]
+st_case2_tb.con
+@22
+st_case2_tb.DUT.rf.r6_out[31:0]
+st_case2_tb.DUT.ram_inst.mem[130][31:0]
+[pattern_trace] 1
+[pattern_trace] 0

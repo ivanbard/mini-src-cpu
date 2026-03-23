@@ -1,0 +1,47 @@
+[*]
+[*] GTKWave Save File - andi_tb
+[*]
+[dumpfile] "andi_tb.vcd"
+[savefile] "andi_tb.gtkw"
+[timestart] 0
+[size] 1920 1080
+[pos] -1 -1
+*-16.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] andi_tb.
+[treeopen] andi_tb.DUT.
+[sst_width] 280
+[signals_width] 320
+[sst_expanded] 1
+[sst_vpaned_height] 300
+@28
+andi_tb.clk
+andi_tb.reset
+andi_tb.Present_state[4:0]
+andi_tb.bus_sel[4:0]
+andi_tb.alu_op[4:0]
+andi_tb.Read
+andi_tb.ram_in
+andi_tb.MDRin
+andi_tb.mar_in
+andi_tb.ir_in
+andi_tb.Zin
+andi_tb.Gra
+andi_tb.Grb
+andi_tb.Grc
+andi_tb.Rin
+andi_tb.Rout
+andi_tb.BAout
+andi_tb.Cout
+andi_tb.con_en
+andi_tb.BusMuxOut[31:0]
+andi_tb.pc_val[31:0]
+andi_tb.ir_val[31:0]
+andi_tb.mar_val[31:0]
+andi_tb.Mdataout[31:0]
+andi_tb.zlow_out[31:0]
+andi_tb.con
+@22
+andi_tb.DUT.rf.r4_out[31:0]
+andi_tb.DUT.rf.r7_out[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

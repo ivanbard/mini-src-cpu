@@ -1,0 +1,48 @@
+[*]
+[*] GTKWave Save File - jal_tb
+[*]
+[dumpfile] "jal_tb.vcd"
+[savefile] "jal_tb.gtkw"
+[timestart] 0
+[size] 1920 1080
+[pos] -1 -1
+*-16.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] jal_tb.
+[treeopen] jal_tb.DUT.
+[sst_width] 280
+[signals_width] 320
+[sst_expanded] 1
+[sst_vpaned_height] 300
+@28
+jal_tb.clk
+jal_tb.reset
+jal_tb.Present_state[4:0]
+jal_tb.bus_sel[4:0]
+jal_tb.alu_op[4:0]
+jal_tb.Read
+jal_tb.ram_in
+jal_tb.MDRin
+jal_tb.mar_in
+jal_tb.ir_in
+jal_tb.Zin
+jal_tb.Gra
+jal_tb.Grb
+jal_tb.Grc
+jal_tb.Rin
+jal_tb.Rout
+jal_tb.BAout
+jal_tb.Cout
+jal_tb.con_en
+jal_tb.BusMuxOut[31:0]
+jal_tb.pc_val[31:0]
+jal_tb.ir_val[31:0]
+jal_tb.mar_val[31:0]
+jal_tb.Mdataout[31:0]
+jal_tb.zlow_out[31:0]
+jal_tb.con
+@22
+jal_tb.DUT.rf.r4_out[31:0]
+jal_tb.DUT.rf.r12_out[31:0]
+jal_tb.pc_val[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
