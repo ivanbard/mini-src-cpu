@@ -13,6 +13,7 @@ module addi_tb;
     wire [31:0] BusMuxOut, pc_val, ir_val, y_val, mar_val;
     wire [31:0] zhigh_out, zlow_out, Mdataout, outport_val;
     wire con;
+    wire Overflow;
 
     localparam SEL_HI=5'd16, SEL_LO=5'd17, SEL_ZLOW=5'd19,
                SEL_PC=5'd20, SEL_MDR=5'd21, SEL_INPORT=5'd22, SEL_C=5'd23;
@@ -34,7 +35,8 @@ module addi_tb;
         .BusMuxOut(BusMuxOut),.pc_val(pc_val),.ir_val(ir_val),
         .y_val(y_val),.mar_val(mar_val),
         .zhigh_out(zhigh_out),.zlow_out(zlow_out),
-        .Mdataout(Mdataout),.outport_val(outport_val),.con(con)
+        .Mdataout(Mdataout),.outport_val(outport_val),.con(con),
+        .Overflow(Overflow)
     );
         
     initial begin clk=0; forever #10 clk=~clk; end
@@ -91,7 +93,8 @@ module addi_tb;
         $display("  R4  = 0x%08h  (exp 0x00000020)", DUT.rf.r4_out);
         $display("  C_ext= 0x%08h  (exp 0xFFFFFFF7)", DUT.extend_c_inst.C_extended);
         $display("  R7  = 0x%08h  (exp 0x00000017)", DUT.rf.r7_out);
-        if(DUT.rf.r7_out===32'h00000017) $display("  >>> PASSED <<<");
+        $display("  OVF = %b  (exp 0)", Overflow);
+        if(DUT.rf.r7_out===32'h00000017 && Overflow===1'b0) $display("  >>> PASSED <<<");
         else $display("  >>> FAILED <<<");
         $display("============================================");
         #20; $finish;

@@ -80,6 +80,10 @@ module datapath_top(
     assign zlow_out = zlow_val;
     
     wire [63:0] alu_result;
+    wire alu_overflow;
+    reg overflow_reg;
+
+    assign Overflow = overflow_reg;
 
     wire [31:0] ram_val;
 
@@ -195,7 +199,7 @@ module datapath_top(
         .B(BusMuxOut),
         .op(alu_op),
         .C(alu_result),
-        .Overflow(Overflow)
+        .Overflow(alu_overflow)
     );
 
     outport outport_inst (
@@ -218,8 +222,10 @@ module datapath_top(
     always @(posedge clk or posedge reset) begin
         if (reset) begin
             Z_reg <= 64'b0;
+            overflow_reg <= 1'b0;
         end else if (Zin) begin
             Z_reg <= alu_result;
+            overflow_reg <= alu_overflow;
         end
     end
 
