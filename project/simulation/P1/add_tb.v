@@ -67,7 +67,7 @@ module add_tb;
                 inport_val <= 32'b0; c_val <= 32'b0;
             end
             // load R5 = 0x34
-            Reg_load1a: begin Mdatain <= 32'h00000034; Read <= 1; MDRin <= 1; end
+            Reg_load1a: begin Mdatain <= 32'hFFFFFFFF; Read <= 1; MDRin <= 1; end
             Reg_load1b: begin Read <= 0; MDRin <= 0; bus_sel <= SEL_MDR; rin <= 16'b0000000000100000; end
             // load R6 = 0x45
             Reg_load2a: begin rin <= 16'b0; bus_sel <= 5'b0; Mdatain <= 32'h00000045; Read <= 1; MDRin <= 1; end

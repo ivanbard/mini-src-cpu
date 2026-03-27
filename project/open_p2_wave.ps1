@@ -2,6 +2,7 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet(
         'addi_tb','andi_tb','brmi_tb','brnz_tb','brpl_tb','brzr_tb',
+        'brmi_fail_tb','brnz_fail_tb','brpl_fail_tb','brzr_fail_tb',
         'in_tb','jal_tb','jr_tb','ld_case1_tb','ld_case2_tb',
         'ldi_case3_tb','ldi_case4_tb','mfhi_tb','mflo_tb','ori_tb',
         'out_tb','st_case1_tb','st_case2_tb'
@@ -88,6 +89,10 @@ $proofMap = @{
     'brnz_tb'      = @("$Test.DUT.rf.r3_out[31:0]", "$Test.con", "$Test.pc_val[31:0]")
     'brpl_tb'      = @("$Test.DUT.rf.r3_out[31:0]", "$Test.con", "$Test.pc_val[31:0]")
     'brmi_tb'      = @("$Test.DUT.rf.r3_out[31:0]", "$Test.con", "$Test.pc_val[31:0]")
+    'brzr_fail_tb' = @("$Test.DUT.rf.r3_out[31:0]", "$Test.con", "$Test.pc_val[31:0]")
+    'brnz_fail_tb' = @("$Test.DUT.rf.r3_out[31:0]", "$Test.con", "$Test.pc_val[31:0]")
+    'brpl_fail_tb' = @("$Test.DUT.rf.r3_out[31:0]", "$Test.con", "$Test.pc_val[31:0]")
+    'brmi_fail_tb' = @("$Test.DUT.rf.r3_out[31:0]", "$Test.con", "$Test.pc_val[31:0]")
     'jr_tb'        = @("$Test.DUT.rf.r12_out[31:0]", "$Test.mar_val[31:0]", "$Test.pc_val[31:0]")
     'jal_tb'       = @("$Test.DUT.rf.r4_out[31:0]", "$Test.DUT.rf.r12_out[31:0]", "$Test.pc_val[31:0]")
     'mfhi_tb'      = @("$Test.DUT.hi_val[31:0]", "$Test.DUT.rf.r5_out[31:0]")

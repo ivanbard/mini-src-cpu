@@ -5,7 +5,8 @@ module alu(
     input wire [31:0] A,
     input wire [31:0] B,
     input wire [4:0] op,
-    output reg [63:0] C
+    output reg [63:0] C,
+    output reg Overflow
 );
 
     // Operation codes
@@ -25,6 +26,7 @@ module alu(
 
     wire [31:0] add_result, sub_result;
     wire add_cout, sub_cout;
+    wire add_overflow, sub_overflow;
     
     wire [63:0] mul_result;
     
@@ -40,7 +42,8 @@ module alu(
         .B(B),
         .Cin(1'b0),
         .Sum(add_result),
-        .Cout(add_cout)
+        .Cout(add_cout),
+        .Overflow(add_overflow)
     );
 
     // subtractor: A - B = A + (~B) + 1
@@ -49,7 +52,8 @@ module alu(
         .B(~B),
         .Cin(1'b1),
         .Sum(sub_result),
-        .Cout(sub_cout)
+        .Cout(sub_cout),
+        .Overflow(sub_overflow)
     );
 
     // negation: -B = ~B + 1
@@ -58,7 +62,8 @@ module alu(
         .B(~B),
         .Cin(1'b1),
         .Sum(neg_result),
-        .Cout(neg_cout)
+        .Cout(neg_cout),
+        .Overflow()
     );
 
     booth_multiplier booth_mul (
@@ -85,9 +90,10 @@ module alu(
     );
 
     always @(*) begin
+        Overflow = 1'b0;
         case (op)
-            OP_ADD:  C = {32'b0, add_result};
-            OP_SUB:  C = {32'b0, sub_result};
+            OP_ADD: begin C = {32'b0, add_result}; Overflow = add_overflow; end
+            OP_SUB: begin C = {32'b0, sub_result}; Overflow = sub_overflow; end
             OP_MUL:  C = mul_result;
             OP_DIV:  C = {div_remainder, div_quotient};
             OP_AND:  C = {32'b0, A & B};

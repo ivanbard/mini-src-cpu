@@ -61,8 +61,16 @@ module datapath_top(
     output wire [31:0] outport_val,
  
     // Control signal output for condition met
+<<<<<<< HEAD
     output wire con
  
+=======
+    output wire con,
+
+    // ALU overflow flag
+    output wire Overflow
+
+>>>>>>> bce2a3c2b135366f152ddc5797cb6cec577ffd42
 );
  
     wire [31:0] r0_out, r1_out, r2_out, r3_out, r4_out, r5_out, r6_out, r7_out;
@@ -80,7 +88,15 @@ module datapath_top(
     assign zlow_out = zlow_val;
     
     wire [63:0] alu_result;
+<<<<<<< HEAD
  
+=======
+    wire alu_overflow;
+    reg overflow_reg;
+
+    assign Overflow = overflow_reg;
+
+>>>>>>> bce2a3c2b135366f152ddc5797cb6cec577ffd42
     wire [31:0] ram_val;
  
     wire [31:0] inport_val;
@@ -194,7 +210,8 @@ module datapath_top(
         .A(y_val),
         .B(BusMuxOut),
         .op(alu_op),
-        .C(alu_result)
+        .C(alu_result),
+        .Overflow(alu_overflow)
     );
  
     outport outport_inst (
@@ -217,8 +234,10 @@ module datapath_top(
     always @(posedge clk or posedge reset) begin
         if (reset) begin
             Z_reg <= 64'b0;
+            overflow_reg <= 1'b0;
         end else if (Zin) begin
             Z_reg <= alu_result;
+            overflow_reg <= alu_overflow;
         end
     end
  
