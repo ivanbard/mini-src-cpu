@@ -13,10 +13,8 @@ module ram (
 
     reg [31:0] mem [0:511];
 
-    integer i;
     initial begin
-        for (i = 0; i < 512; i = i + 1)
-            mem[i] = 32'h00000000;
+        $readmemh("simulation/P3/memory_p3.hex", mem);
     end
 
     always @(posedge clk) begin

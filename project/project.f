@@ -13,3 +13,5 @@ rtl/ripple_carry_adder.v
 rtl/select_encode.v
 rtl/con_ff.v
 rtl/io.v
+rtl/control_unit.v
+rtl/cpu.v

@@ -5,7 +5,8 @@ module ripple_carry_adder(
     input wire [31:0] B,
     input wire Cin,
     output wire [31:0] Sum,
-    output wire Cout
+    output wire Cout,
+    output wire Vout
 );
 
     wire [32:0] carry;
@@ -25,6 +26,7 @@ module ripple_carry_adder(
     endgenerate
 
     assign Cout = carry[32];
+    assign Vout = carry[31] ^ carry[32];
 
 endmodule
 
