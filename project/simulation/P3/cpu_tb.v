@@ -104,8 +104,15 @@ module cpu_tb;
             if (pass) $display("  >>> ALL CHECKS PASSED <<<");
             else      $display("  >>> SOME CHECKS FAILED <<<");
         end
- 
-        $display("=======================================================");
+
+        begin : dump_mem
+            integer fd, i;
+            fd = $fopen("memory_out.hex", "w");
+            for (i = 0; i < 512; i = i + 1)
+                $fdisplay(fd, "%08X", DUT.dp.ram_inst.mem[i]);
+            $fclose(fd);
+            $display("Memory dumped to memory_out.hex");
+        end
         #20; $finish;
     end
  
