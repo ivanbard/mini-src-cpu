@@ -1,5 +1,5 @@
 `timescale 1ns/10ps
-
+ 
 module cpu (
     input  wire        clk,
     input  wire        reset,
@@ -8,7 +8,7 @@ module cpu (
     output wire [31:0] outport_val,
     output wire        run
 );
-
+ 
     wire [4:0]  bus_sel;
     wire        pc_in, IncPC, ir_in, y_in, mar_in;
     wire        hi_in, lo_in;
@@ -20,20 +20,21 @@ module cpu (
     wire        con_en;
     wire        inport_in, outport_in;
     wire        jal_r12_in;
-
+ 
     wire [31:0] ir_val;
     wire        con;
-
+ 
     wire [31:0] BusMuxOut, pc_val, y_val, mar_val;
     wire [31:0] zhigh_out, zlow_out, Mdataout;
-
+ 
     control_unit cu (
         .clk        (clk),
         .reset      (reset),
         .stop       (stop),
         .con        (con),
         .IR         (ir_val),
-
+        .MDR        (Mdataout),
+ 
         .bus_sel    (bus_sel),
         .pc_in      (pc_in),
         .IncPC      (IncPC),
@@ -56,7 +57,7 @@ module cpu (
         .jal_r12_in (jal_r12_in),
         .run        (run)
     );
-
+ 
     datapath_top dp (
         .clk        (clk),
         .reset      (reset),
@@ -93,5 +94,5 @@ module cpu (
         .outport_val(outport_val),
         .con        (con)
     );
-
+ 
 endmodule

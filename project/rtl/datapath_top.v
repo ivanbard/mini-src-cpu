@@ -61,16 +61,11 @@ module datapath_top(
     output wire [31:0] outport_val,
  
     // Control signal output for condition met
-<<<<<<< HEAD
-    output wire con
- 
-=======
     output wire con,
 
     // ALU overflow flag
     output wire Overflow
 
->>>>>>> bce2a3c2b135366f152ddc5797cb6cec577ffd42
 );
  
     wire [31:0] r0_out, r1_out, r2_out, r3_out, r4_out, r5_out, r6_out, r7_out;
@@ -88,15 +83,11 @@ module datapath_top(
     assign zlow_out = zlow_val;
     
     wire [63:0] alu_result;
-<<<<<<< HEAD
- 
-=======
     wire alu_overflow;
     reg overflow_reg;
 
     assign Overflow = overflow_reg;
 
->>>>>>> bce2a3c2b135366f152ddc5797cb6cec577ffd42
     wire [31:0] ram_val;
  
     wire [31:0] inport_val;

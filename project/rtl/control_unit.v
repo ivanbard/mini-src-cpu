@@ -29,6 +29,7 @@ module control_unit (
     input  wire        stop,
     input  wire        con,
     input  wire [31:0] IR,
+    input  wire [31:0] MDR,  // decode opcode from MDR at T2 to avoid IR timing hazard
  
     output reg  [4:0]  bus_sel,
     output reg         pc_in,
@@ -69,7 +70,9 @@ module control_unit (
         OP_MFHI  = 5'b11000, OP_MFLO  = 5'b11001,
         OP_NOP   = 5'b11010, OP_HALT  = 5'b11011;
  
-    wire [4:0] opcode = IR[31:27];
+    // At S_FETCH2, IR hasn't latched yet — use MDR directly.
+    // At all execute states IR is valid and holds the current instruction.
+    wire [4:0] opcode = (state == S_FETCH2) ? MDR[31:27] : IR[31:27];
  
     // ----------------------------------------------------------
     // ALU op codes  (alu.v)
@@ -233,6 +236,8 @@ module control_unit (
     // ----------------------------------------------------------
     // Output logic
     // ----------------------------------------------------------
+    initial $display("[CU] MDR_decode_fix_v3: correct file loaded, same cycle count");
+ 
     always @* begin
         bus_sel    = 5'd0;
         pc_in      = 0; IncPC      = 0; ir_in      = 0;
