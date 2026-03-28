@@ -39,8 +39,7 @@ module datapath_top(
  
     // Enable for con_ff
     input wire con_en,
- 
-    // Phase 3: jal saves return address directly to R12
+
     input wire jal_r12_in,
  
     output wire [31:0] BusMuxOut,

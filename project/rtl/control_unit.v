@@ -1,26 +1,3 @@
-// =============================================================
-//  control_unit.v  —  Mini SRC Phase 3  (Method 1 FSM)
-//
-//  Opcode table  (IR[31:27]):
-//    00000  add    00001  sub    00010  and    00011  or
-//    00100  shr    00101  shra   00110  shl    00111  ror    01000  rol
-//    01001  addi   01010  andi   01011  ori
-//    01100  div    01101  mul    01110  neg    01111  not
-//    10000  ld     10001  ldi    10010  st
-//    10011  jal    10100  jr     10101  br
-//    10110  in     10111  out
-//    11000  mfhi   11001  mflo
-//    11010  nop    11011  halt
-//
-//  Fetch (T0-T2, every instruction):
-//    T0: PCout -> MARin, IncPC
-//    T1: Read, MDRin, ram_in          (no pc_in — IncPC alone advances PC)
-//    T2: MDRout -> IRin
-//
-//  jal saves PC (return address) to the hardwired R12 register.
-//  Requires jal_r12_in output, wired in datapath_top as:
-//    .rin(Rin_decoded | (jal_r12_in ? 16'h1000 : 16'h0))
-// =============================================================
 `timescale 1ns/10ps
  
 module control_unit (
@@ -29,7 +6,7 @@ module control_unit (
     input  wire        stop,
     input  wire        con,
     input  wire [31:0] IR,
-    input  wire [31:0] MDR,  // decode opcode from MDR at T2 to avoid IR timing hazard
+    input  wire [31:0] MDR, 
  
     output reg  [4:0]  bus_sel,
     output reg         pc_in,
@@ -49,13 +26,11 @@ module control_unit (
     output reg         con_en,
     output reg         inport_in,
     output reg         outport_in,
-    output reg         jal_r12_in,   // direct R12 write for jal
+    output reg         jal_r12_in, 
     output reg         run
 );
  
-    // ----------------------------------------------------------
-    // Instruction opcodes  (IR[31:27])
-    // ----------------------------------------------------------
+    // operation codes
     localparam [4:0]
         OP_ADD   = 5'b00000, OP_SUB   = 5'b00001,
         OP_AND   = 5'b00010, OP_OR    = 5'b00011,
@@ -70,13 +45,10 @@ module control_unit (
         OP_MFHI  = 5'b11000, OP_MFLO  = 5'b11001,
         OP_NOP   = 5'b11010, OP_HALT  = 5'b11011;
  
-    // At S_FETCH2, IR hasn't latched yet — use MDR directly.
-    // At all execute states IR is valid and holds the current instruction.
+    // find operation code with safety in case ir not set yet
     wire [4:0] opcode = (state == S_FETCH2) ? MDR[31:27] : IR[31:27];
  
-    // ----------------------------------------------------------
-    // ALU op codes  (alu.v)
-    // ----------------------------------------------------------
+    // alu codes
     localparam [4:0]
         ALU_ADD  = 5'd0,  ALU_SUB  = 5'd1,
         ALU_MUL  = 5'd2,  ALU_DIV  = 5'd3,
@@ -85,18 +57,14 @@ module control_unit (
         ALU_SHR  = 5'd8,  ALU_SHRA = 5'd9,
         ALU_SHL  = 5'd10, ALU_ROR  = 5'd11, ALU_ROL = 5'd12;
  
-    // ----------------------------------------------------------
-    // Bus selector constants  (bus_mux_enc / mux_encoder)
-    // ----------------------------------------------------------
+    // bus selection
     localparam [4:0]
         BUS_HI  = 5'd16, BUS_LO  = 5'd17,
         BUS_ZH  = 5'd18, BUS_ZL  = 5'd19,
         BUS_PC  = 5'd20, BUS_MDR = 5'd21,
         BUS_IN  = 5'd22, BUS_C   = 5'd23;
  
-    // ----------------------------------------------------------
-    // FSM states
-    // ----------------------------------------------------------
+    // all fsm states
     localparam [5:0]
         S_RESET   = 6'd0,
         S_FETCH0  = 6'd1,
@@ -124,17 +92,13 @@ module control_unit (
     reg [5:0] state;
     reg [5:0] next_state;
  
-    // ----------------------------------------------------------
-    // State register
-    // ----------------------------------------------------------
+    // state register
     always @(posedge clk or posedge reset) begin
         if (reset) state <= S_RESET;
         else       state <= next_state;
     end
  
-    // ----------------------------------------------------------
-    // Next-state logic
-    // ----------------------------------------------------------
+    // next state selection
     always @* begin
         next_state = S_FETCH0;
         if (stop) begin
@@ -170,7 +134,7 @@ module control_unit (
                     OP_HALT:            next_state = S_HALT;
                     default:            next_state = S_FETCH0;
                 endcase
-                end // S_FETCH2
+                end 
  
                 S_ALU3_T3: next_state = S_ALU3_T4;
                 S_ALU3_T4: next_state = S_ALU3_T5;
@@ -233,9 +197,7 @@ module control_unit (
         end
     end
  
-    // ----------------------------------------------------------
-    // Output logic
-    // ----------------------------------------------------------
+    // control signal output based on state
     initial $display("[CU] MDR_decode_fix_v3: correct file loaded, same cycle count");
  
     always @* begin
@@ -255,30 +217,23 @@ module control_unit (
         run        = (state != S_HALT);
  
         case (state)
-            // -------------------------------------------------
-            // FETCH
-            // -------------------------------------------------
-            S_FETCH0: begin              // T0: PCout, MARin, IncPC
+            // standard states prior to each instruction
+            S_FETCH0: begin 
                 bus_sel = BUS_PC;
                 mar_in  = 1;
                 IncPC   = 1;
             end
-            S_FETCH1: begin              // T1: Read, MDRin (no pc_in!)
+            S_FETCH1: begin  
                 Read   = 1;
                 MDRin  = 1;
                 ram_in = 1;
             end
-            S_FETCH2: begin              // T2: MDRout, IRin
+            S_FETCH2: begin  
                 bus_sel = BUS_MDR;
                 ir_in   = 1;
             end
  
-            // -------------------------------------------------
-            // R-TYPE 3-OPERAND: add, sub, and, or, shr/a, shl, ror, rol
-            // T3: Grb, Rout, Yin
-            // T4: Grc, Rout, ALUop, Zin
-            // T5: Zlowout, Gra, Rin
-            // -------------------------------------------------
+            // add, sub, and, or, shr/a, shl, ror, rol
             S_ALU3_T3: begin
                 Grb  = 1; Rout = 1; y_in = 1;
             end
@@ -302,11 +257,7 @@ module control_unit (
                 bus_sel = BUS_ZL; Gra = 1; Rin = 1;
             end
  
-            // -------------------------------------------------
-            // R-TYPE 2-OPERAND: neg, not
-            // T3: Grb, Rout, op, Zin
-            // T4: Zlowout, Gra, Rin
-            // -------------------------------------------------
+            // neg, not
             S_ALU2_T3: begin
                 Grb  = 1; Rout = 1;
                 alu_op = (opcode == OP_NEG) ? ALU_NEG : ALU_NOT;
@@ -316,74 +267,38 @@ module control_unit (
                 bus_sel = BUS_ZL; Gra = 1; Rin = 1;
             end
  
-            // -------------------------------------------------
-            // MUL: mul Ra, Rb  =>  HI:LO = Ra * Rb
-            // T3: Gra, Rout, Yin
-            // T4: Grb, Rout, MUL, Zin
-            // T5: Zlowout, LOin
-            // T6: Zhighout, HIin
-            // -------------------------------------------------
+            // mul
             S_MUL_T3: begin Gra = 1; Rout = 1; y_in = 1; end
             S_MUL_T4: begin Grb = 1; Rout = 1; alu_op = ALU_MUL; Zin = 1; end
             S_MUL_T5: begin bus_sel = BUS_ZL; lo_in = 1; end
             S_MUL_T6: begin bus_sel = BUS_ZH; hi_in = 1; end
  
-            // -------------------------------------------------
-            // DIV: div Ra, Rb  =>  LO=quotient, HI=remainder
-            // T3: Gra, Rout, Yin
-            // T4: Grb, Rout, DIV, Zin
-            // T5: Zlowout, LOin
-            // T6: Zhighout, HIin
-            // -------------------------------------------------
+            // div
             S_DIV_T3: begin Gra = 1; Rout = 1; y_in = 1; end
             S_DIV_T4: begin Grb = 1; Rout = 1; alu_op = ALU_DIV; Zin = 1; end
             S_DIV_T5: begin bus_sel = BUS_ZL; lo_in = 1; end
             S_DIV_T6: begin bus_sel = BUS_ZH; hi_in = 1; end
  
-            // -------------------------------------------------
-            // LD: ld Ra, C(Rb)
-            // T3: Grb, BAout, Rout, Yin
-            // T4: Cout, ADD, Zin
-            // T5: Zlowout, MARin
-            // T6: Read, MDRin
-            // T7: MDRout, Gra, Rin
-            // -------------------------------------------------
+            // ld
             S_LD_T3: begin Grb = 1; BAout = 1; Rout = 1; y_in = 1; end
             S_LD_T4: begin Cout = 1; bus_sel = BUS_C; alu_op = ALU_ADD; Zin = 1; end
             S_LD_T5: begin bus_sel = BUS_ZL; mar_in = 1; end
             S_LD_T6: begin Read = 1; MDRin = 1; ram_in = 1; end
             S_LD_T7: begin bus_sel = BUS_MDR; Gra = 1; Rin = 1; end
  
-            // -------------------------------------------------
-            // LDI: ldi Ra, C(Rb)   EA -> Ra directly
-            // T3: Grb, BAout, Rout, Yin
-            // T4: Cout, ADD, Zin
-            // T5: Zlowout, Gra, Rin
-            // -------------------------------------------------
+            // ldi
             S_LDI_T3: begin Grb = 1; BAout = 1; Rout = 1; y_in = 1; end
             S_LDI_T4: begin Cout = 1; bus_sel = BUS_C; alu_op = ALU_ADD; Zin = 1; end
             S_LDI_T5: begin bus_sel = BUS_ZL; Gra = 1; Rin = 1; end
  
-            // -------------------------------------------------
-            // ST: st C(Rb), Ra    Ra=data, Rb=base
-            // T3: Grb, BAout, Rout, Yin
-            // T4: Cout, ADD, Zin
-            // T5: Zlowout, MARin
-            // T6: Gra, Rout, MDRin
-            // T7: MDRout (on bus), ram_in  (sync write to mem[MAR])
-            // -------------------------------------------------
+            // st
             S_ST_T3: begin Grb = 1; BAout = 1; Rout = 1; y_in = 1; end
             S_ST_T4: begin Cout = 1; bus_sel = BUS_C; alu_op = ALU_ADD; Zin = 1; end
             S_ST_T5: begin bus_sel = BUS_ZL; mar_in = 1; end
             S_ST_T6: begin Gra = 1; Rout = 1; MDRin = 1; end
             S_ST_T7: begin bus_sel = BUS_MDR; ram_in = 1; end
  
-            // -------------------------------------------------
-            // ADDI/ANDI/ORI: op Ra, Rb, C
-            // T3: Grb, Rout, Yin
-            // T4: Cout, ALUop, Zin
-            // T5: Zlowout, Gra, Rin
-            // -------------------------------------------------
+            // andi, addi, ori
             S_IMM_T3: begin Grb = 1; Rout = 1; y_in = 1; end
             S_IMM_T4: begin
                 Cout = 1; bus_sel = BUS_C;
@@ -397,59 +312,34 @@ module control_unit (
             end
             S_IMM_T5: begin bus_sel = BUS_ZL; Gra = 1; Rin = 1; end
  
-            // -------------------------------------------------
-            // BRANCH: br Ra, C   C2=IR[20:19]
-            // T3: Gra, Rout, CONin
-            // T4: PCout, Yin
-            // T5: Cout, ADD, Zin
-            // T6: Zlowout, (CON ? PCin : -)
-            // -------------------------------------------------
+            // branching
             S_BR_T3: begin Gra = 1; Rout = 1; con_en = 1; end
             S_BR_T4: begin bus_sel = BUS_PC; y_in = 1; end
             S_BR_T5: begin Cout = 1; bus_sel = BUS_C; alu_op = ALU_ADD; Zin = 1; end
             S_BR_T6: begin bus_sel = BUS_ZL; pc_in = con; end
  
-            // -------------------------------------------------
-            // JR: jr Ra  =>  PC = Ra
-            // T3: Gra, Rout, PCin
-            // -------------------------------------------------
+            // jr
             S_JR_T3: begin Gra = 1; Rout = 1; pc_in = 1; end
  
-            // -------------------------------------------------
-            // JAL: jal Ra
-            // T3: PCout, R12in   save return address to R12
-            // T4: Gra, Rout, PCin  jump to Ra
-            // -------------------------------------------------
+            // jal
             S_JAL_T3: begin bus_sel = BUS_PC; jal_r12_in = 1; end
             S_JAL_T4: begin Gra = 1; Rout = 1; pc_in = 1; end
  
-            // -------------------------------------------------
-            // MFHI/MFLO
-            // T3: HIout/LOout, Gra, Rin
-            // -------------------------------------------------
+            // -mfhi, mflo
             S_MFHI_T3: begin bus_sel = BUS_HI; Gra = 1; Rin = 1; end
             S_MFLO_T3: begin bus_sel = BUS_LO; Gra = 1; Rin = 1; end
  
-            // -------------------------------------------------
-            // IN: in Ra
-            // T3: strobe InPort latch
-            // T4: InPortout, Gra, Rin
-            // -------------------------------------------------
+            // in
             S_IN_T3: begin inport_in = 1; end
             S_IN_T4: begin bus_sel = BUS_IN; Gra = 1; Rin = 1; end
  
-            // -------------------------------------------------
-            // OUT: out Ra
-            // T3: Gra, Rout, Out.Portin
-            // -------------------------------------------------
+            // out
             S_OUT_T3: begin Gra = 1; Rout = 1; outport_in = 1; end
  
-            // -------------------------------------------------
-            // NOP / RESET / HALT
-            // -------------------------------------------------
-            S_NOP_T3:  ; // idle
-            S_RESET:   ; // all off
-            S_HALT:    ; // run=0
+            // nop, reset, halt
+            S_NOP_T3:  ;
+            S_RESET:   ;
+            S_HALT:    ;
  
         endcase
     end
