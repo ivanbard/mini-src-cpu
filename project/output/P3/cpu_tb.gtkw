@@ -1,0 +1,70 @@
+[*]
+[*] GTKWave Save File - cpu_tb
+[*]
+[dumpfile] "cpu_tb.vcd"
+[savefile] "output/P3/cpu_tb.gtkw"
+[timestart] 0
+[size] 1920 1080
+[pos] -1 -1
+*-16.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] cpu_tb.
+[treeopen] cpu_tb.DUT.
+[treeopen] cpu_tb.DUT.cu.
+[treeopen] cpu_tb.DUT.dp.
+[treeopen] cpu_tb.DUT.dp.rf.
+[sst_width] 320
+[signals_width] 360
+[sst_expanded] 1
+[sst_vpaned_height] 300
+@28
+cpu_tb.clk
+cpu_tb.reset
+cpu_tb.stop
+cpu_tb.run
+cpu_tb.DUT.cu.state[5:0]
+cpu_tb.DUT.cu.bus_sel[4:0]
+cpu_tb.DUT.cu.alu_op[4:0]
+cpu_tb.DUT.cu.pc_in
+cpu_tb.DUT.cu.IncPC
+cpu_tb.DUT.cu.ir_in
+cpu_tb.DUT.cu.mar_in
+cpu_tb.DUT.cu.MDRin
+cpu_tb.DUT.cu.Read
+cpu_tb.DUT.cu.ram_in
+cpu_tb.DUT.cu.Zin
+cpu_tb.DUT.cu.Gra
+cpu_tb.DUT.cu.Grb
+cpu_tb.DUT.cu.Grc
+cpu_tb.DUT.cu.Rin
+cpu_tb.DUT.cu.Rout
+cpu_tb.DUT.cu.BAout
+cpu_tb.DUT.cu.Cout
+cpu_tb.DUT.cu.con_en
+cpu_tb.DUT.dp.con
+@22
+cpu_tb.DUT.dp.BusMuxOut[31:0]
+cpu_tb.DUT.dp.pc_val[31:0]
+cpu_tb.DUT.dp.ir_val[31:0]
+cpu_tb.DUT.dp.mar_val[31:0]
+cpu_tb.DUT.dp.Mdataout[31:0]
+cpu_tb.DUT.dp.zlow_out[31:0]
+cpu_tb.DUT.dp.key_regs_inst.HI.d_out[31:0]
+cpu_tb.DUT.dp.key_regs_inst.LO.d_out[31:0]
+cpu_tb.DUT.dp.rf.r0_out[31:0]
+cpu_tb.DUT.dp.rf.r1_out[31:0]
+cpu_tb.DUT.dp.rf.r2_out[31:0]
+cpu_tb.DUT.dp.rf.r3_out[31:0]
+cpu_tb.DUT.dp.rf.r4_out[31:0]
+cpu_tb.DUT.dp.rf.r5_out[31:0]
+cpu_tb.DUT.dp.rf.r6_out[31:0]
+cpu_tb.DUT.dp.rf.r7_out[31:0]
+cpu_tb.DUT.dp.rf.r8_out[31:0]
+cpu_tb.DUT.dp.rf.r9_out[31:0]
+cpu_tb.DUT.dp.rf.r10_out[31:0]
+cpu_tb.DUT.dp.rf.r11_out[31:0]
+cpu_tb.DUT.dp.rf.r12_out[31:0]
+cpu_tb.DUT.dp.rf.r13_out[31:0]
+cpu_tb.DUT.dp.rf.r14_out[31:0]
+cpu_tb.DUT.dp.rf.r15_out[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
