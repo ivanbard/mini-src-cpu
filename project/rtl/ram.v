@@ -11,10 +11,12 @@ module ram (
     output wire [31:0] ram_val
 );
 
+    parameter INIT_FILE = "simulation/P3/memory_p3.hex";
+
     reg [31:0] mem [0:511];
 
     initial begin
-        $readmemh("simulation/P3/memory_p3.hex", mem);
+        $readmemh(INIT_FILE, mem);
     end
 
     always @(posedge clk) begin
