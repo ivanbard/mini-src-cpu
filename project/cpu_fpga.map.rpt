@@ -1,5 +1,5 @@
 Analysis & Synthesis report for cpu_fpga
-Mon Mar 30 13:20:05 2026
+Mon Mar 30 15:17:19 2026
 Quartus Prime Version 25.1std.0 Build 1129 10/21/2025 SC Lite Edition
 
 
@@ -73,7 +73,7 @@ on the Quartus Prime software download page.
 +-----------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                      ;
 +---------------------------------+-------------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Mon Mar 30 13:20:04 2026           ;
+; Analysis & Synthesis Status     ; Successful - Mon Mar 30 15:17:18 2026           ;
 ; Quartus Prime Version           ; 25.1std.0 Build 1129 10/21/2025 SC Lite Edition ;
 ; Revision Name                   ; cpu_fpga                                        ;
 ; Top-level Entity Name           ; cpu_fpga                                        ;
@@ -197,10 +197,7 @@ on the Quartus Prime software download page.
 ;     Processor 3            ;   0.0%      ;
 ;     Processor 4            ;   0.0%      ;
 ;     Processor 5            ;   0.0%      ;
-;     Processor 6            ;   0.0%      ;
-;     Processor 7            ;   0.0%      ;
-;     Processor 8            ;   0.0%      ;
-;     Processors 9-16        ;   0.0%      ;
+;     Processors 6-16        ;   0.0%      ;
 +----------------------------+-------------+
 
 
@@ -974,7 +971,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:18     ;
+; Top            ; 00:00:37     ;
 +----------------+--------------+
 
 
@@ -984,7 +981,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 25.1std.0 Build 1129 10/21/2025 SC Lite Edition
-    Info: Processing started: Mon Mar 30 13:19:36 2026
+    Info: Processing started: Mon Mar 30 15:16:19 2026
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off cpu_fpga -c cpu_fpga
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 16 of the 16 processors detected
@@ -1035,7 +1032,7 @@ Info (12021): Found 3 design units, including 3 entities, in source file rtl/sel
 Info (12021): Found 1 design units, including 1 entities, in source file rtl/seven_segment.v
     Info (12023): Found entity 1: seven_seg File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/seven_segment.v Line: 1
 Info (12127): Elaborating entity "cpu_fpga" for the top level hierarchy
-Info (12128): Elaborating entity "cpu" for hierarchy "cpu:cpu_inst" File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/cpu_fpga.v Line: 51
+Info (12128): Elaborating entity "cpu" for hierarchy "cpu:cpu_inst" File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/cpu_fpga.v Line: 49
 Info (12128): Elaborating entity "control_unit" for hierarchy "cpu:cpu_inst|control_unit:cu" File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/cpu.v Line: 61
 Info (10648): Verilog HDL Display System Task info at control_unit.v(201): [CU] MDR_decode_fix_v3: correct file loaded, same cycle count File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/control_unit.v Line: 201
 Info (12128): Elaborating entity "datapath_top" for hierarchy "cpu:cpu_inst|datapath_top:dp" File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/cpu.v Line: 100
@@ -1065,7 +1062,7 @@ Info (12128): Elaborating entity "barrel_shifter" for hierarchy "cpu:cpu_inst|da
 Info (12128): Elaborating entity "outport" for hierarchy "cpu:cpu_inst|datapath_top:dp|outport:outport_inst" File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/datapath_top.v Line: 217
 Info (12128): Elaborating entity "inport" for hierarchy "cpu:cpu_inst|datapath_top:dp|inport:inport_inst" File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/datapath_top.v Line: 225
 Info (12128): Elaborating entity "bus_mux_enc" for hierarchy "cpu:cpu_inst|datapath_top:dp|bus_mux_enc:bmux" File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/datapath_top.v Line: 257
-Info (12128): Elaborating entity "seven_seg" for hierarchy "seven_seg:seg0" File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/cpu_fpga.v Line: 56
+Info (12128): Elaborating entity "seven_seg" for hierarchy "seven_seg:seg0" File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/cpu_fpga.v Line: 54
 Info (276014): Found 1 instances of uninferred RAM logic
     Info (276007): RAM logic "cpu:cpu_inst|datapath_top:dp|ram:ram_inst|mem" is uninferred due to asynchronous read logic File: C:/Users/user/Desktop/pc/374/verilog-test/project/rtl/ram.v Line: 16
 Warning (12241): 18 hierarchies have connectivity warnings - see the Connectivity Checks report folder
@@ -1119,9 +1116,9 @@ Info (21057): Implemented 26454 device resources after synthesis - the final res
     Info (21059): Implemented 52 output pins
     Info (21061): Implemented 26389 logic cells
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 46 warnings
-    Info: Peak virtual memory: 5075 megabytes
-    Info: Processing ended: Mon Mar 30 13:20:05 2026
-    Info: Elapsed time: 00:00:29
-    Info: Total CPU time (on all processors): 00:00:37
+    Info: Peak virtual memory: 5102 megabytes
+    Info: Processing ended: Mon Mar 30 15:17:19 2026
+    Info: Elapsed time: 00:01:00
+    Info: Total CPU time (on all processors): 00:01:17
 
 

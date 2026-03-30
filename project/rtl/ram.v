@@ -11,7 +11,7 @@ module ram (
     output wire [31:0] ram_val
 );
 
-    parameter INIT_FILE = "simulation/P3/memory_p3.hex";
+    parameter INIT_FILE = "simulation/P4/memory_p4.hex";
 
     reg [31:0] mem [0:511];
 

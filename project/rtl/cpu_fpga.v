@@ -13,10 +13,8 @@ module cpu_fpga (
     output wire [6:0] HEX5
 );
 
-    // Fixed divided clock for stable FPGA bring-up.
-    // 50 MHz / 2^(4+1) ~= 1.56 MHz
-    // This keeps the official Phase 4 display loop visible without
-    // introducing a switch-controlled clock mux into the design.
+    // 50 MHz / 2^(4+1) = 1.56 MHz
+	//for the fpga board loading/boot-up 
     localparam CLK_DIV_BITS = 4;
 
     reg [CLK_DIV_BITS:0] clk_div_cnt = { (CLK_DIV_BITS + 1) {1'b0} };
