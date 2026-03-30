@@ -1,107 +1,53 @@
 # CPU Design Project
-In Verilog, using Icarus Verilog and GTKWave
+Verilog implementation of the Mini SRC CPU, simulated with Icarus Verilog and viewed in GTKWave.
 
-# To-Do
-## Phase 2
+# Current Status
+Phase 3 is implemented in the RTL under `project/rtl` and exercised by the full-program testbench in `project/simulation/P3/cpu_tb.v`.
 
-## 1. Memory Subsystem
-- [ ] Implement Memory Address Register (MAR)
-- [ ] Implement Memory Data Register (MDR)
-- [ ] Add MDR input mux (Bus vs Memory Data)
-- [ ] Implement RAM (512 × 32)
-  - [ ] Choose synchronous RAM
-  - [ ] Support Read and Write signals
-- [ ] Connect RAM output → MDR → Bus
-- [ ] Initialize memory (e.g., $readmemh or Quartus HEX file)
-- [ ] Verify correct read/write behavior
+The control unit is implemented in the Method 1 style from the assignment:
+- A finite-state machine selects the next micro-state from the current state and opcode.
+- Control signals are asserted directly per state.
+- The design is centered around explicit fetch/execute states, not Boolean equations for each control line.
 
----
+# Phase 3 Coverage
+Implemented in the CPU datapath/control integration:
+- Fetch sequence and instruction decode
+- `nop` and `halt`
+- Register-register ALU ops
+- Immediate ALU ops
+- `ld`, `ldi`, `st`
+- `mul`, `div`, `mfhi`, `mflo`
+- `jr`, `jal`
+- Branch condition evaluation through `con_ff`
 
-## 2. Select & Encode Logic
-- [ ] Extract Ra, Rb, Rc fields from IR
-- [ ] Implement 4-to-16 decoder
-- [ ] Generate R0in–R15in signals
-- [ ] Generate R0out–R15out signals
-- [ ] Support Gra, Grb, Grc control signals
-- [ ] Support Rin and Rout control signals
-- [ ] Implement BAout behavior
-  - [ ] R0 outputs 0 onto bus
-  - [ ] R1–R15 output register contents
+Verified assets in the repo:
+- Single-instruction Phase 1 and Phase 2 testbenches in `project/simulation/P1` and `project/simulation/P2`
+- Full Phase 3 program image in `project/simulation/P3/memory_p3.hex`
+- Full Phase 3 end-to-end testbench in `project/simulation/P3/cpu_tb.v`
+- GTKWave save file for Phase 3 in `project/output/P3/cpu_tb.gtkw`
 
----
+# Running Phase 3
+From `project/`:
 
-## 3. Sign Extension Logic
-- [ ] Sign-extend IR[18:0] to 32 bits
-- [ ] Fan out MSB of C field (IR[18])
-- [ ] Output C_sign_extended
+```powershell
+iverilog -o cpu_tb.out -f project.f simulation/P3/cpu_tb.v
+vvp cpu_tb.out
+gtkwave cpu_tb.vcd output/P3/cpu_tb.gtkw
+```
 
----
+The Phase 3 testbench generates:
+- `cpu_tb.vcd`
+- `memory_before.hex`
+- `memory_after.hex`
 
-## 4. Revised R0 Register
-- [ ] Modify R0 to support BAout
-  - [ ] BAout = 1 → output 0
-  - [ ] BAout = 0 → normal output
-- [ ] Preserve write capability when R0in asserted
+# Report Checklist
+For the Phase 3 submission, include:
+- Verilog source for the control unit and integrated datapath
+- Functional simulation run of the Phase 3 program
+- Waveform screenshots showing `IR`, `PC`, `MDR`, `MAR`, `R0-R15`, `HI`, and `LO`
+- Memory contents before the run from `memory_before.hex`
+- Memory contents after the run from `memory_after.hex`
 
----
-
-## 5. CON FF (Conditional Branch) Logic
-- [ ] Decode C2 field (IR[20:19])
-- [ ] Evaluate register value on bus:
-  - [ ] Zero (brzr)
-  - [ ] Non-zero (brnz)
-  - [ ] Positive (brpl)
-  - [ ] Negative (brmi)
-- [ ] Generate CON signal
-- [ ] Latch CON using CON flip-flop
-- [ ] Support CONin enable signal
-
----
-
-## 6. Input / Output Ports
-- [ ] Implement Input Port register
-- [ ] Implement Output Port register
-- [ ] Connect ports to BusMux
-- [ ] Optional: handle input strobe signal
-- [ ] Verify bus ↔ port data flow
-
----
-
-## 7. Functional Simulation (Instruction Testing)
-
-### Memory Instructions
-- [ ] ld
-- [ ] ldi
-- [ ] st
-
-### ALU Immediate Instructions
-- [ ] addi
-- [ ] andi
-- [ ] ori
-
-### Branch Instructions
-- [ ] brzr
-- [ ] brnz
-- [ ] brpl
-- [ ] brmi
-
-### Jump Instructions
-- [ ] jr
-- [ ] jal
-
-### Special Instructions
-- [ ] mfhi
-- [ ] mflo
-
-### I/O Instructions
-- [ ] out
-- [ ] in
-
----
-
-## 8. Report Preparation
-- [ ] Clean Verilog/VHDL code
-- [ ] Testbench(s)
-- [ ] Memory initialization printout
-- [ ] Simulation waveforms for all Phase 2 instructions
-- [ ] Brief explanation of testbench reuse
+# Notes
+- The RAM module currently loads `simulation/P3/memory_p3.hex` by default.
+- The multiplier still compiles with width warnings in `project/rtl/booth_multiplier.v`, but the Phase 3 functional test passes end-to-end.
