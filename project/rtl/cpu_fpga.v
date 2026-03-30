@@ -13,17 +13,14 @@ module cpu_fpga (
     output wire [6:0] HEX5
 );
 
-    // Use SW[9:8] to choose a practical board clock without recompiling.
-    // 00 -> ~1.56 MHz, 01 -> ~390 kHz, 10 -> ~97.6 kHz, 11 -> ~24.4 kHz
-    localparam CLK_DIV_BITS = 11;
+    // Fixed divided clock for stable FPGA bring-up.
+    // 50 MHz / 2^(4+1) ~= 1.56 MHz
+    // This keeps the official Phase 4 display loop visible without
+    // introducing a switch-controlled clock mux into the design.
+    localparam CLK_DIV_BITS = 4;
 
     reg [CLK_DIV_BITS:0] clk_div_cnt = { (CLK_DIV_BITS + 1) {1'b0} };
-    wire [1:0] speed_sel = SW[9:8];
-    wire       cpu_clk =
-        (speed_sel == 2'b00) ? clk_div_cnt[4]  :
-        (speed_sel == 2'b01) ? clk_div_cnt[6]  :
-        (speed_sel == 2'b10) ? clk_div_cnt[8]  :
-                               clk_div_cnt[10];
+    wire       cpu_clk = clk_div_cnt[CLK_DIV_BITS];
 
     always @(posedge CLOCK_50)
         clk_div_cnt <= clk_div_cnt + 1'b1;

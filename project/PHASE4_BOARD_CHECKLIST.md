@@ -15,9 +15,8 @@
 
 ## Initial Board Setup
 1. Set `SW[7:0] = 0xE0`.
-2. Start with `SW[9:8] = 00`.
-3. Program the FPGA.
-4. Press `KEY0` to reset and start the CPU.
+2. Program the FPGA.
+3. Press `KEY0` to reset and start the CPU.
 
 ## What You Should See
 1. `LEDR5` stays high while the CPU is running.
@@ -26,11 +25,6 @@
 3. That sequence should repeat 5 times.
 4. The final displayed value should be `63`.
 5. After the final `halt`, `LEDR5` should go low.
-
-## If the Display Is Too Fast or Too Slow
-1. Change `SW[9:8]` and reset again with `KEY0`.
-2. Suggested order:
-   `00`, then `01`, then `10`, then `11`
 
 ## If Something Looks Wrong
 1. First confirm `SW[7:0]` are still `E0`.
