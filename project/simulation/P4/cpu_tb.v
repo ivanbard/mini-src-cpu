@@ -36,6 +36,8 @@ module cpu_tb;
     wire [31:0] lo_val  = DUT.dp.key_regs_inst.LO.d_out;
 
     integer cycle_count;
+    integer exec_cycle_count;
+    integer instr_count;
     integer out_count;
     integer delay_override;
     reg     pass;
@@ -43,6 +45,7 @@ module cpu_tb;
     reg     quiet_mode;
     reg     using_delay_override;
     reg [31:0] expected_mem88;
+    real    cpi;
 
     initial begin clk = 0; forever #10 clk = ~clk; end
 
@@ -81,6 +84,10 @@ module cpu_tb;
 
     always @(posedge clk) begin
         cycle_count = cycle_count + 1;
+        if (!reset && run)
+            exec_cycle_count = exec_cycle_count + 1;
+        if (!reset && DUT.cu.ir_in)
+            instr_count = instr_count + 1;
         if (cycle_count > 80000000) begin
             $display("TIMEOUT after %0d cycles", cycle_count);
             $finish;
@@ -99,6 +106,8 @@ module cpu_tb;
 
     initial begin
         cycle_count = 0;
+        exec_cycle_count = 0;
+        instr_count = 0;
         out_count   = 0;
         delay_override = 0;
         pass        = 1'b1;
@@ -106,6 +115,7 @@ module cpu_tb;
         quiet_mode = $test$plusargs("quiet");
         using_delay_override = 1'b0;
         expected_mem88 = 32'h0000FFFF;
+        cpi = 0.0;
         device_in   = 32'h000000E0;
         stop        = 1'b0;
 
@@ -130,6 +140,8 @@ module cpu_tb;
 
         @(negedge run);
         repeat(2) @(posedge clk);
+        if (instr_count != 0)
+            cpi = (exec_cycle_count * 1.0) / instr_count;
 
         $display("=======================================================");
         $display("  Phase 4 Program Complete  (%0d cycles)", cycle_count);
@@ -164,6 +176,9 @@ module cpu_tb;
         $display("  mem[0x089] = 0x%08h   (exp 0x0000006C)", DUT.dp.ram_inst.mem[9'h089]);
         $display("  mem[0x0A3] = 0x%08h   (exp 0x00000008)", DUT.dp.ram_inst.mem[9'h0A3]);
         $display("  out_count  = %0d       (exp 41)", out_count);
+        $display("  fetched instructions = %0d", instr_count);
+        $display("  execution cycles     = %0d", exec_cycle_count);
+        $display("  CPI                  = %0.3f", cpi);
         $display("=======================================================");
 
         if (out_count !== 41) begin $display("  FAIL out_count"); pass = 0; end

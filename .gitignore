@@ -1,1 +1,10 @@
 docs\phase1-demo-checklist.md
+
+# Simulation/build artifacts
+project/*.out
+project/*.vcd
+project/*.hex
+!project/simulation/P3/memory_p3.hex
+!project/simulation/P4/memory_p4.hex
+project/*.qws
+project/db/
