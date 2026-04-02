@@ -36,15 +36,19 @@ module cpu_tb;
     initial begin clk = 0; forever #10 clk = ~clk; end
 
     integer cycle_count;
-    initial begin
-        cycle_count = 0;
-        forever begin
-            @(posedge clk);
-            cycle_count = cycle_count + 1;
-            if (cycle_count > 50000) begin
-                $display("TIMEOUT after %0d cycles", cycle_count);
-                $finish;
-            end
+    integer exec_cycle_count;
+    integer instr_count;
+    real    cpi;
+
+    always @(posedge clk) begin
+        cycle_count = cycle_count + 1;
+        if (!reset && run)
+            exec_cycle_count = exec_cycle_count + 1;
+        if (!reset && DUT.cu.ir_in)
+            instr_count = instr_count + 1;
+        if (cycle_count > 50000) begin
+            $display("TIMEOUT after %0d cycles", cycle_count);
+            $finish;
         end
     end
 
@@ -62,6 +66,10 @@ module cpu_tb;
     initial begin
         $dumpfile("cpu_tb.vcd");
         $dumpvars(0, cpu_tb);
+        cycle_count = 0;
+        exec_cycle_count = 0;
+        instr_count = 0;
+        cpi = 0.0;
         device_in = 32'h0;
         stop      = 1'b0;
 
@@ -73,6 +81,8 @@ module cpu_tb;
         #1 reset = 0;
         @(negedge run);
         repeat(2) @(posedge clk);
+        if (instr_count != 0)
+            cpi = (exec_cycle_count * 1.0) / instr_count;
 
         $display("=======================================================");
         $display("  Phase 3 Program Complete  (%0d cycles)", cycle_count);
@@ -103,6 +113,9 @@ module cpu_tb;
         $display("-------------------------------------------------------");
         $display("  mem[0x089] = 0x%08h   (exp 0x0000006C)", DUT.dp.ram_inst.mem[9'h089]);
         $display("  mem[0x0A3] = 0x%08h   (exp 0x00000008)", DUT.dp.ram_inst.mem[9'h0A3]);
+        $display("  fetched instructions = %0d", instr_count);
+        $display("  execution cycles     = %0d", exec_cycle_count);
+        $display("  CPI                  = %0.3f", cpi);
         $display("=======================================================");
 
         begin : check

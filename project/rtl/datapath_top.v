@@ -1,4 +1,6 @@
-module datapath_top(
+module datapath_top #(
+    parameter MEM_INIT_FILE = "simulation/P3/memory_p3.hex"
+)(
     input wire clk,
     input wire reset,
     input wire [4:0] bus_sel,
@@ -149,7 +151,9 @@ module datapath_top(
  
     assign Mdataout = mdr_val;
  
-    ram ram_inst (
+    ram #(
+        .INIT_FILE(MEM_INIT_FILE)
+    ) ram_inst (
         .clk(clk),
         .ram_read(Read),      
         .ram_en(ram_in),  

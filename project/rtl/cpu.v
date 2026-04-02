@@ -1,6 +1,8 @@
 `timescale 1ns/10ps
  
-module cpu (
+module cpu #(
+    parameter MEM_INIT_FILE = "simulation/P3/memory_p3.hex"
+) (
     input  wire        clk,
     input  wire        reset,
     input  wire        stop,
@@ -58,7 +60,9 @@ module cpu (
         .run        (run)
     );
  
-    datapath_top dp (
+    datapath_top #(
+        .MEM_INIT_FILE(MEM_INIT_FILE)
+    ) dp (
         .clk        (clk),
         .reset      (reset),
         .bus_sel    (bus_sel),

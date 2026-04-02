@@ -1,30 +1,21 @@
 # CPU Design Project
-Verilog implementation of the Mini SRC CPU, simulated with Icarus Verilog and viewed in GTKWave.
+Verilog implementation of the Mini SRC CPU, simulated with Icarus Verilog and prepared for DE0-CV FPGA bring-up.
 
 # Current Status
-Phase 3 is implemented in the RTL under `project/rtl` and exercised by the full-program testbench in `project/simulation/P3/cpu_tb.v`.
+Phase 3 is complete and still supported.
 
-The control unit is implemented in the Method 1 style from the assignment:
+Phase 4 is prepared in this branch:
+- The Phase 4 memory image is in `project/simulation/P4/memory_p4.hex`.
+- The CPU can be instantiated with a selectable RAM init file.
+- The DE0-CV top-level is in `project/rtl/cpu_fpga.v`.
+- Quartus project files are in `project/cpu_fpga.qpf`, `project/cpu_fpga.qsf`, and `project/cpu_fpga.sdc`.
+- The dedicated Phase 4 simulation testbench is in `project/simulation/P4/cpu_tb.v`.
+
+# Control Unit Style
+The control unit is implemented in Method 1 style from the assignment:
 - A finite-state machine selects the next micro-state from the current state and opcode.
 - Control signals are asserted directly per state.
-- The design is centered around explicit fetch/execute states, not Boolean equations for each control line.
-
-# Phase 3 Coverage
-Implemented in the CPU datapath/control integration:
-- Fetch sequence and instruction decode
-- `nop` and `halt`
-- Register-register ALU ops
-- Immediate ALU ops
-- `ld`, `ldi`, `st`
-- `mul`, `div`, `mfhi`, `mflo`
-- `jr`, `jal`
-- Branch condition evaluation through `con_ff`
-
-Verified assets in the repo:
-- Single-instruction Phase 1 and Phase 2 testbenches in `project/simulation/P1` and `project/simulation/P2`
-- Full Phase 3 program image in `project/simulation/P3/memory_p3.hex`
-- Full Phase 3 end-to-end testbench in `project/simulation/P3/cpu_tb.v`
-- GTKWave save file for Phase 3 in `project/output/P3/cpu_tb.gtkw`
+- The design is organized around explicit fetch and execute states rather than derived Boolean equations per control signal.
 
 # Running Phase 3
 From `project/`:
@@ -35,19 +26,50 @@ vvp cpu_tb.out
 gtkwave cpu_tb.vcd output/P3/cpu_tb.gtkw
 ```
 
-The Phase 3 testbench generates:
-- `cpu_tb.vcd`
-- `memory_before.hex`
-- `memory_after.hex`
+# Running Phase 4 Simulation
+From `project/`:
 
-# Report Checklist
-For the Phase 3 submission, include:
-- Verilog source for the control unit and integrated datapath
-- Functional simulation run of the Phase 3 program
-- Waveform screenshots showing `IR`, `PC`, `MDR`, `MAR`, `R0-R15`, `HI`, and `LO`
-- Memory contents before the run from `memory_before.hex`
-- Memory contents after the run from `memory_after.hex`
+```powershell
+iverilog -o cpu_tb_p4.out -f project.f simulation/P4/cpu_tb.v
+vvp cpu_tb_p4.out
+```
+
+Useful Phase 4 simulation options:
+- Fast smoke test:
+
+```powershell
+vvp cpu_tb_p4.out +delay_hex=00000010 +quiet +nodump
+```
+
+- Waveform view after a dumped run:
+
+```powershell
+gtkwave cpu_tb_p4.vcd output/P4/cpu_tb.gtkw
+```
+
+The Phase 4 testbench writes:
+- `memory_p4_before.hex`
+- `memory_p4_after.hex`
+
+# FPGA Bring-Up
+Open `project/cpu_fpga.qpf` in Quartus and use top-level `cpu_fpga`.
+
+If you want a quick syntax build of the FPGA top-level with Icarus:
+
+```powershell
+iverilog -s cpu_fpga -o cpu_fpga_build.out -f fpga.f
+```
+
+Board mapping prepared in RTL and QSF:
+- `KEY0` -> reset
+- `KEY1` -> stop
+- `LEDR5` -> run indicator
+- `SW[7:0]` -> `In.Port[7:0]`
+- `HEX1:HEX0` -> `Out.Port[7:4] : Out.Port[3:0]`
+- Fixed divided CPU clock -> about 1.56 MHz
 
 # Notes
-- The RAM module currently loads `simulation/P3/memory_p3.hex` by default.
-- The multiplier still compiles with width warnings in `project/rtl/booth_multiplier.v`, but the Phase 3 functional test passes end-to-end.
+- The dedicated FPGA top-level always boots with the Phase 4 image.
+- The generic CPU module still defaults to the Phase 3 image unless overridden by parameter.
+- The multiplier still compiles with width warnings in `project/rtl/booth_multiplier.v`, but the current Phase 3 and Phase 4 smoke tests pass.
+- See `project/PHASE4_BOARD_CHECKLIST.md` for a short board-demo checklist.
