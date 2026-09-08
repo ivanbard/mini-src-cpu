@@ -38,6 +38,7 @@ module cpu_tb;
     integer cycle_count;
     integer exec_cycle_count;
     integer instr_count;
+    reg     dump_enabled;
     real    cpi;
 
     always @(posedge clk) begin
@@ -47,8 +48,7 @@ module cpu_tb;
         if (!reset && DUT.cu.ir_in)
             instr_count = instr_count + 1;
         if (cycle_count > 50000) begin
-            $display("TIMEOUT after %0d cycles", cycle_count);
-            $finish;
+            $fatal(1, "TIMEOUT after %0d cycles", cycle_count);
         end
     end
 
@@ -64,17 +64,20 @@ module cpu_tb;
     endtask
 
     initial begin
-        $dumpfile("cpu_tb.vcd");
-        $dumpvars(0, cpu_tb);
         cycle_count = 0;
         exec_cycle_count = 0;
         instr_count = 0;
+        dump_enabled = !$test$plusargs("nodump");
         cpi = 0.0;
         device_in = 32'h0;
         stop      = 1'b0;
 
-        dump_memory("memory_before.hex");
-        $display("Memory dumped to memory_before.hex");
+        if (dump_enabled) begin
+            $dumpfile("cpu_tb.vcd");
+            $dumpvars(0, cpu_tb);
+            dump_memory("memory_before.hex");
+            $display("Memory dumped to memory_before.hex");
+        end
 
         reset = 1;
         repeat(3) @(posedge clk);
@@ -142,11 +145,13 @@ module cpu_tb;
             if (DUT.dp.ram_inst.mem[9'h089] !== 32'h0000006C) begin $display("  FAIL mem[0x89]"); pass=0; end
             if (DUT.dp.ram_inst.mem[9'h0A3] !== 32'h00000008) begin $display("  FAIL mem[0xA3]"); pass=0; end
             if (pass) $display("  >>> ALL CHECKS PASSED <<<");
-            else      $display("  >>> SOME CHECKS FAILED <<<");
+            else      $fatal(1, "Phase 3 checks failed");
         end
 
-        dump_memory("memory_after.hex");
-        $display("Memory dumped to memory_after.hex");
+        if (dump_enabled) begin
+            dump_memory("memory_after.hex");
+            $display("Memory dumped to memory_after.hex");
+        end
         #20; $finish;
     end
 

@@ -1,4 +1,4 @@
-// ALU - Phase 1
+// 32-bit Mini SRC ALU with a 64-bit result path.
 // no +/- operators except in mul/div units
 
 module alu(

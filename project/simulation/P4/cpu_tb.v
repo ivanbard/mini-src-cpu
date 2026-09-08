@@ -89,8 +89,7 @@ module cpu_tb;
         if (!reset && DUT.cu.ir_in)
             instr_count = instr_count + 1;
         if (cycle_count > 80000000) begin
-            $display("TIMEOUT after %0d cycles", cycle_count);
-            $finish;
+            $fatal(1, "TIMEOUT after %0d cycles", cycle_count);
         end
 
         if (DUT.cu.outport_in) begin
@@ -124,8 +123,10 @@ module cpu_tb;
             $dumpvars(0, cpu_tb);
         end
 
-        dump_memory("memory_p4_before.hex");
-        $display("Memory dumped to memory_p4_before.hex");
+        if (dump_enabled) begin
+            dump_memory("memory_p4_before.hex");
+            $display("Memory dumped to memory_p4_before.hex");
+        end
 
         if ($value$plusargs("delay_hex=%h", delay_override)) begin
             using_delay_override = 1'b1;
@@ -194,10 +195,12 @@ module cpu_tb;
         if (DUT.dp.ram_inst.mem[9'h0A3] !== 32'h00000008) begin $display("  FAIL mem[0xA3]"); pass = 0; end
 
         if (pass) $display("  >>> ALL CHECKS PASSED <<<");
-        else      $display("  >>> SOME CHECKS FAILED <<<");
+        else      $fatal(1, "Phase 4 checks failed");
 
-        dump_memory("memory_p4_after.hex");
-        $display("Memory dumped to memory_p4_after.hex");
+        if (dump_enabled) begin
+            dump_memory("memory_p4_after.hex");
+            $display("Memory dumped to memory_p4_after.hex");
+        end
         #20 $finish;
     end
 

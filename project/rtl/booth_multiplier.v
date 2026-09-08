@@ -26,12 +26,13 @@ module booth_multiplier(
     generate
         for (i = 0; i < 16; i = i + 1) begin : booth_pp_gen
             wire [2:0] booth_bits;
+            localparam [5:0] SHIFT_AMOUNT = 2 * i;
             assign booth_bits = B_ext[2*i + 2 : 2*i];
             
             booth_partial_product bpp (
                 .M(A),
                 .booth_bits(booth_bits),
-                .shift_amount(2 * i),
+                .shift_amount(SHIFT_AMOUNT),
                 .pp(pp[i])
             );
         end
@@ -44,7 +45,7 @@ module booth_multiplier(
     booth_partial_product bpp_last (
         .M(A),
         .booth_bits(last_booth_bits),
-        .shift_amount(32),
+        .shift_amount(6'd32),
         .pp(pp[16])
     );
     
