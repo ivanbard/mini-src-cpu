@@ -4,7 +4,7 @@ module select_encode (
     input wire Rin, Rout, BAout,
     // Destination register enable (wire to registers.v rin i believe)
     output wire [15:0] Rin_decoded,
-    // Set control signal for bus mux, will need a module to encode to our chosen bus mux signals (save for phase 3)
+    // One-hot register output selection for the bus encoder.
     output wire [15:0] Rout_decoded,
     output wire BAout_R0
 );

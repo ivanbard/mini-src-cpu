@@ -198,8 +198,6 @@ module control_unit (
     end
  
     // control signal output based on state
-    initial $display("[CU] MDR_decode_fix_v3: correct file loaded, same cycle count");
- 
     always @* begin
         bus_sel    = 5'd0;
         pc_in      = 0; IncPC      = 0; ir_in      = 0;

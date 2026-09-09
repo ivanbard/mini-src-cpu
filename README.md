@@ -1,75 +1,110 @@
-# CPU Design Project
-Verilog implementation of the Mini SRC CPU, simulated with Icarus Verilog and prepared for DE0-CV FPGA bring-up.
+# Mini SRC CPU
 
-# Current Status
-Phase 3 is complete and still supported.
+[![CI](https://github.com/ivanbard/ELEC374/actions/workflows/ci.yml/badge.svg)](https://github.com/ivanbard/ELEC374/actions/workflows/ci.yml)
 
-Phase 4 is prepared in this branch:
-- The Phase 4 memory image is in `project/simulation/P4/memory_p4.hex`.
-- The CPU can be instantiated with a selectable RAM init file.
-- The DE0-CV top-level is in `project/rtl/cpu_fpga.v`.
-- Quartus project files are in `project/cpu_fpga.qpf`, `project/cpu_fpga.qsf`, and `project/cpu_fpga.sdc`.
-- The dedicated Phase 4 simulation testbench is in `project/simulation/P4/cpu_tb.v`.
+A 32-bit, multicycle Mini SRC processor implemented in Verilog. The design combines a single-bus datapath, a finite-state control unit, a 28-instruction ISA, memory, and dedicated input/output ports. It can be simulated with Icarus Verilog and synthesized for the Intel DE0-CV FPGA board.
 
-# Control Unit Style
-The control unit is implemented in Method 1 style from the assignment:
-- A finite-state machine selects the next micro-state from the current state and opcode.
-- Control signals are asserted directly per state.
-- The design is organized around explicit fetch and execute states rather than derived Boolean equations per control signal.
+![GTKWave trace of the NEG instruction moving through the datapath](docs/waveform-neg.png)
 
-# Running Phase 3
-From `project/`:
+## Architecture
 
-```powershell
-iverilog -o cpu_tb.out -f project.f simulation/P3/cpu_tb.v
-vvp cpu_tb.out
+```mermaid
+flowchart LR
+    CU[Multicycle control FSM] -->|control signals| DP
+    IN[32-bit input port] --> BUS
+    BUS[32-bit internal bus] --> RF[16 x 32-bit registers]
+    BUS --> KR[PC / IR / MAR / MDR / Y]
+    RF --> BUS
+    KR --> BUS
+    BUS --> ALU[64-bit ALU result path]
+    ALU --> Z[Z / HI / LO]
+    Z --> BUS
+    KR <--> RAM[512 x 32-bit RAM]
+    BUS --> OUT[32-bit output port]
+    DP[Datapath] --- BUS
+```
+
+The processor fetches and executes one instruction across several clock cycles. Its FSM directly asserts the datapath control signals for each micro-operation.
+
+### Highlights
+
+- Sixteen 32-bit general-purpose registers plus `HI` and `LO`
+- Arithmetic, logic, shifts, rotates, branching, jumps, load/store, and I/O
+- Hand-built ripple-carry adder and five-stage barrel shifter
+- Signed radix-4 Booth multiplier and non-restoring divider
+- Parameterized RAM initialization for complete program simulations
+- DE0-CV top level with synchronized keys, switches, LEDs, and hexadecimal displays
+
+The full datapath, instruction set, and implementation tradeoffs are documented in [docs/design.md](docs/design.md).
+
+## Verification
+
+The public test target runs two self-checking programs and compiles the FPGA top level. A mismatch or timeout exits with a failure status.
+
+| Check | Verified result |
+| --- | --- |
+| System program | 270 cycles, 44 instructions, CPI 6.023 |
+| Accelerated I/O demo | 12,466 cycles, 2,168 instructions, CPI 5.748 |
+| FPGA top-level compile | Passes with Icarus Verilog 12.0 |
+| Quartus fit | Successful for Cyclone V `5CEBA4F23C7` |
+
+Install [Icarus Verilog](https://steveicarus.github.io/iverilog/) and GNU Make, then run:
+
+```sh
+make test
+```
+
+Individual targets are available as `make test-p3`, `make test-p4`, and `make fpga-check`. GitHub Actions runs the same command for every push and pull request.
+
+To generate and inspect the system-program waveform:
+
+```sh
+mkdir -p build
+cd project
+iverilog -g2012 -s cpu_tb -o ../build/cpu-p3.out -f project.f simulation/P3/cpu_tb.v
+vvp ../build/cpu-p3.out
 gtkwave cpu_tb.vcd output/P3/cpu_tb.gtkw
 ```
 
-# Running Phase 4 Simulation
-From `project/`:
+## FPGA target
 
-```powershell
-iverilog -o cpu_tb_p4.out -f project.f simulation/P4/cpu_tb.v
-vvp cpu_tb_p4.out
+Open `project/cpu_fpga.qpf` in Quartus Prime and compile the `cpu_fpga` top-level entity. The checked-in project targets the DE0-CV's Cyclone V `5CEBA4F23C7` device.
+
+| Board resource | Function |
+| --- | --- |
+| `KEY0` | Reset and restart |
+| `KEY1` | Stop execution |
+| `SW[7:0]` | Low byte of the input port |
+| `LEDR5` | CPU running indicator |
+| `HEX1:HEX0` | Low byte of the output port |
+
+With `SW[7:0]` set to `E0`, the demo program outputs `E0 70 38 1C 0E 07 03 01` five times, finishes at `63`, and halts.
+
+The last recorded Quartus 25.1 Standard fit used 10,068 of 18,480 ALMs (54%), 17,262 registers, and 65 pins. These numbers document successful synthesis; a physical-board run is still the final hardware validation step.
+
+## Repository layout
+
+```text
+project/
+  rtl/                 processor and FPGA RTL
+  simulation/P1/       datapath and ALU testbenches
+  simulation/P2/       individual instruction testbenches
+  simulation/P3/       complete system program
+  simulation/P4/       FPGA I/O demonstration program
+  output/P3, output/P4 GTKWave view configurations
+  cpu_fpga.qpf/.qsf     Quartus project and board assignments
+docs/
+  design.md             architecture, ISA, and synthesis notes
+Makefile                repeatable simulation and compile checks
 ```
 
-Useful Phase 4 simulation options:
-- Fast smoke test:
+## Scope and limitations
 
-```powershell
-vvp cpu_tb_p4.out +delay_hex=00000010 +quiet +nodump
-```
+- The processor is multicycle rather than pipelined and has no caches or interrupts.
+- RAM uses asynchronous reads; the recorded Quartus fit implemented it in logic instead of block RAM.
+- The generic CPU boots the system image by default, while the FPGA top level selects the I/O demo image.
+- Simulation and synthesis are automated. Physical DE0-CV validation is not claimed here.
 
-- Waveform view after a dumped run:
+## Credits
 
-```powershell
-gtkwave cpu_tb_p4.vcd output/P4/cpu_tb.gtkw
-```
-
-The Phase 4 testbench writes:
-- `memory_p4_before.hex`
-- `memory_p4_after.hex`
-
-# FPGA Bring-Up
-Open `project/cpu_fpga.qpf` in Quartus and use top-level `cpu_fpga`.
-
-If you want a quick syntax build of the FPGA top-level with Icarus:
-
-```powershell
-iverilog -s cpu_fpga -o cpu_fpga_build.out -f fpga.f
-```
-
-Board mapping prepared in RTL and QSF:
-- `KEY0` -> reset
-- `KEY1` -> stop
-- `LEDR5` -> run indicator
-- `SW[7:0]` -> `In.Port[7:0]`
-- `HEX1:HEX0` -> `Out.Port[7:4] : Out.Port[3:0]`
-- Fixed divided CPU clock -> about 1.56 MHz
-
-# Notes
-- The dedicated FPGA top-level always boots with the Phase 4 image.
-- The generic CPU module still defaults to the Phase 3 image unless overridden by parameter.
-- The multiplier still compiles with width warnings in `project/rtl/booth_multiplier.v`, but the current Phase 3 and Phase 4 smoke tests pass.
-- See `project/PHASE4_BOARD_CHECKLIST.md` for a short board-demo checklist.
+Developed as a Queen's University ELEC 374 team project by Ivan Bardziyan, Fedya321, and Nikhil Naran. The preserved original submission is tagged `course-submission`; this branch packages the same design for reproducible public review.

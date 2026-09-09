@@ -22,8 +22,7 @@ module datapath_top #(
     input wire [4:0] alu_op,    // ALU operation select
     input wire Zin,             // Z register load enable
  
-    // Drives C_extended for the time being, replace in phase 3
-    // Put in 19 bit inputs now, C extended will extend if necessary
+    // Optional external constant; instruction immediates use C_extended.
     input wire [31:0] c_val,
  
     // RAM control
@@ -184,7 +183,7 @@ module datapath_top #(
     // Choose appropriate c value based on c_extend
     wire [31:0] c_bus_val = Cout ? c_extended : c_raw;
  
-    // Phase 2 input for bus_sel and select encode R0 to R15 bus output
+    // Combine general-register and special-source bus selection.
     mux_encoder mux_encoder_inst (
         .Rout_decoded(Rout_decoded),
         .other_sel(bus_sel),

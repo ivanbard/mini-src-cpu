@@ -1,9 +1,0 @@
-Add all required .v file names to project.f
-something like command below makes compilation easy
-
-iverilog -f project.f simulation/P3/cpu_tb.v
-vvp a.out
-gtkwave addi_tb.vcd
-
-
-iverilog -o cpu_tb.out rtl/alu.v rtl/barrel_shifter.v rtl/booth_multiplier.v rtl/bus_mux.v rtl/datapath_top.v rtl/divider.v rtl/key_regs.v rtl/mdr.v rtl/pc_reg.v rtl/ram.v rtl/registers.v rtl/ripple_carry_adder.v rtl/select_encode.v rtl/con_ff.v rtl/io.v rtl/control_unit.v rtl/cpu.v simulation/P3/cpu_tb.v

@@ -1,10 +1,28 @@
-docs\phase1-demo-checklist.md
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+*.swp
 
-# Simulation/build artifacts
-project/*.out
-project/*.vcd
+# Simulation artifacts
+build/
+*.out
+*.vcd
 project/*.hex
 !project/simulation/P3/memory_p3.hex
 !project/simulation/P4/memory_p4.hex
-project/*.qws
+
+# Quartus-generated artifacts
 project/db/
+project/incremental_db/
+project/output_files/
+project/other/
+project/*.done
+project/*.jdi
+project/*.jditmp
+project/*.pin
+project/*.qws
+project/*.rpt
+project/*.sld
+project/*.smsg
+project/*.sof
+project/*.summary
