@@ -107,4 +107,4 @@ Makefile                repeatable simulation and compile checks
 
 ## Credits
 
-Developed as a Queen's University ELEC 374 team project by Ivan Bardziyan, Fedya321, and Nikhil Naran. The preserved original submission is tagged `course-submission`; this branch packages the same design for reproducible public review.
+Developed as a Queen's University ELEC 374 team project by Ivan Bardziyan, Fedor Kim, and Nikhil Naran. The preserved original submission is tagged `course-submission`; this branch packages the same design for reproducible public review.
